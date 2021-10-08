@@ -1,6 +1,6 @@
-defmodule Niss do
+defmodule NissFw do
   @moduledoc """
-  Documentation for Niss.
+  Documentation for NissFw.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Niss do
 
   ## Examples
 
-      iex> Niss.hello
+      iex> NissFw.hello
       :world
 
   """

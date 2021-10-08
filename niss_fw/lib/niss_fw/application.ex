@@ -1,4 +1,4 @@
-defmodule Niss.Application do
+defmodule NissFw.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -9,13 +9,13 @@ defmodule Niss.Application do
   def start(_type, _args) do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Niss.Supervisor]
+    opts = [strategy: :one_for_one, name: NissFw.Supervisor]
 
     children =
       [
         # Children for all targets
-        # Starts a worker by calling: Niss.Worker.start_link(arg)
-        # {Niss.Worker, arg},
+        # Starts a worker by calling: NissFw.Worker.start_link(arg)
+        # {NissFw.Worker, arg},
       ] ++ children(target())
 
     Supervisor.start_link(children, opts)
@@ -25,20 +25,20 @@ defmodule Niss.Application do
   def children(:host) do
     [
       # Children that only run on the host
-      # Starts a worker by calling: Niss.Worker.start_link(arg)
-      # {Niss.Worker, arg},
+      # Starts a worker by calling: NissFw.Worker.start_link(arg)
+      # {NissFw.Worker, arg},
     ]
   end
 
   def children(_target) do
     [
       # Children for all targets except host
-      # Starts a worker by calling: Niss.Worker.start_link(arg)
-      # {Niss.Worker, arg},
+      # Starts a worker by calling: NissFw.Worker.start_link(arg)
+      # {NissFw.Worker, arg},
     ]
   end
 
   def target() do
-    Application.get_env(:niss, :target)
+    Application.get_env(:niss_fw, :target)
   end
 end

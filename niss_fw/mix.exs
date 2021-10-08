@@ -1,7 +1,7 @@
-defmodule Niss.MixProject do
+defmodule NissFw.MixProject do
   use Mix.Project
 
-  @app :niss
+  @app :niss_fw
   @version "0.1.0"
   @all_targets [:rpi, :rpi0, :rpi2, :rpi3, :rpi3a, :rpi4, :bbb, :osd32mp1, :x86_64]
 
@@ -22,7 +22,7 @@ defmodule Niss.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {Niss.Application, []},
+      mod: {NissFw.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -31,6 +31,7 @@ defmodule Niss.MixProject do
   defp deps do
     [
       # Dependencies for all targets
+      {:niss_ui, path: "../niss_ui"},
       {:nerves, "~> 1.7.4", runtime: false},
       {:shoehorn, "~> 0.7.0"},
       {:ring_logger, "~> 0.8.1"},

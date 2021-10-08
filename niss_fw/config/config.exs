@@ -5,10 +5,13 @@
 # is restricted to this project.
 import Config
 
+import_config "../../niss_ui/config/config.exs"
+import_config "../../niss_ui/config/prod.exs"
+
 # Enable the Nerves integration with Mix
 Application.start(:nerves_bootstrap)
 
-config :niss, target: Mix.target()
+config :niss_fw, target: Mix.target()
 
 # Customize non-Elixir parts of the firmware. See
 # https://hexdocs.pm/nerves/advanced-configuration.html for details.
