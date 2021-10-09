@@ -33,6 +33,7 @@ defmodule NissUi.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:site_encrypt, "~> 0.4"},
       {:httpoison, "~> 1.8"},
       {:phoenix, "~> 1.6.0"},
       {:phoenix_ecto, "~> 4.4"},
@@ -48,7 +49,8 @@ defmodule NissUi.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:telemetry, "~> 1.0", override: true}
     ]
   end
 

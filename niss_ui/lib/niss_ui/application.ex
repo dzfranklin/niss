@@ -17,7 +17,7 @@ defmodule NissUi.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: NissUi.PubSub},
       # Start the Endpoint (http/https)
-      NissUiWeb.Endpoint
+      {SiteEncrypt.Phoenix, NissUiWeb.Endpoint}
       # Start a worker by calling: NissUi.Worker.start_link(arg)
       # {NissUi.Worker, arg}
     ]

@@ -17,6 +17,10 @@ config :niss_ui, NissUiWeb.Endpoint,
   pubsub_server: NissUi.PubSub,
   live_view: [signing_salt: "eFYz3WJ5"]
 
+config :niss_ui, :site_encrypt,
+  domains: ["home.danielzfranklin.org"],
+  emails: ["daniel@danielzfranklin.org"]
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

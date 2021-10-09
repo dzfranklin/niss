@@ -1,5 +1,9 @@
 import Config
 
+config :niss_ui, :site_encrypt,
+  db_folder: "/data/site_encrypt_db_prod",
+  directory_url: "https://acme-v02.api.letsencrypt.org/directory"
+
 config :niss_ui, NissUi.Repo, database: "/data/db_prod.sqlite"
 
 # For production, don't forget to configure the url host
@@ -14,10 +18,8 @@ config :niss_ui, NissUi.Repo, database: "/data/db_prod.sqlite"
 config :niss_ui, NissUiWeb.Endpoint,
   # Root filesystem is read-only
   code_reloader: false,
-  http: [
-    ip: {0, 0, 0, 0, 0, 0, 0, 0},
-    port: 80
-  ],
+  http: [ip: {0, 0, 0, 0, 0, 0, 0, 0}, port: 80],
+  https: [ip: {0, 0, 0, 0, 0, 0, 0, 0}, port: 443],
   # Use compile-time mix config only
   load_from_system_env: false,
   server: true,

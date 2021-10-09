@@ -1,5 +1,9 @@
 import Config
 
+config :niss_ui, :site_encrypt,
+  db_folder: "/tmp/niss_site_encrypt_db_test",
+  directory_url: {:internal, port: 4002}
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

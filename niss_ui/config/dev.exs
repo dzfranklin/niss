@@ -1,5 +1,9 @@
 import Config
 
+config :niss_ui, :site_encrypt,
+  db_folder: "/tmp/niss_site_encrypt_db_test",
+  directory_url: {:internal, port: 4002}
+
 # Configure your database
 config :niss_ui, NissUi.Repo, database: "db_dev.sqlite"
 
@@ -13,6 +17,7 @@ config :niss_ui, NissUiWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
+  https: [ip: {127, 0, 0, 1}, port: 4001],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
