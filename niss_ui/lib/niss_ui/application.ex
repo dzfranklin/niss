@@ -7,6 +7,8 @@ defmodule NissUi.Application do
 
   @impl true
   def start(_type, _args) do
+    ensure_db_setup!()
+
     children = [
       # Start the Ecto repository
       NissUi.Repo,
@@ -32,5 +34,25 @@ defmodule NissUi.Application do
   def config_change(changed, _new, removed) do
     NissUiWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp ensure_db_setup! do
+    ensure_repo_setup!(NissUi.Repo)
+    ensure_repo_migrated!(NissUi.Repo)
+  end
+
+  defp ensure_repo_setup!(repo) do
+    db_file = Application.get_env(:niss_ui, repo)[:database]
+
+    unless File.exists?(db_file) do
+      :ok = repo.__adapter__.storage_up(repo.config)
+    end
+  end
+
+  defp ensure_repo_migrated!(repo) do
+    Ecto.Migrator.with_repo(
+      repo,
+      &Ecto.Migrator.run(&1, :up, all: true)
+    )
   end
 end

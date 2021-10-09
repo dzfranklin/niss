@@ -1,13 +1,7 @@
 import Config
 
 # Configure your database
-config :niss_ui, NissUi.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "niss_ui_dev",
-  hostname: "localhost",
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+config :niss_ui, NissUi.Repo, database: "db_dev.sqlite"
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
