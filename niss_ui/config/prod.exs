@@ -14,12 +14,16 @@ config :niss_ui, NissUi.Repo, database: "/data/db_prod.sqlite"
 config :niss_ui, NissUiWeb.Endpoint,
   # Root filesystem is read-only
   code_reloader: false,
-  http: [port: 80],
+  http: [
+    ip: {0, 0, 0, 0, 0, 0, 0, 0},
+    port: 80
+  ],
   # Use compile-time mix config only
   load_from_system_env: false,
   server: true,
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  url: [host: "home.danielzfranklin.org", port: 80],
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  secret_key_base: System.fetch_env!("NISS_SECRET_KEY_BASE")
 
 # Do not print debug messages in production
 config :logger, level: :info

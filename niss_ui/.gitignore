@@ -32,6 +32,9 @@ niss_ui-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Generated assets
+/priv/static
+
 # Dev/test databases
 db_*.sqlite
 db_*.sqlite-*
