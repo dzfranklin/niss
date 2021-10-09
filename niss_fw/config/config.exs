@@ -6,7 +6,6 @@
 import Config
 
 import_config "../../niss_ui/config/config.exs"
-import_config "../../niss_ui/config/prod.exs"
 
 # Enable the Nerves integration with Mix
 Application.start(:nerves_bootstrap)
