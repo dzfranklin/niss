@@ -7,6 +7,11 @@
 # General application configuration
 import Config
 
+config :surface, :components, [
+  {Surface.Components.Form.ErrorTag,
+   default_translator: {NissUiWeb.ErrorHelpers, :translate_error}}
+]
+
 config :niss_ui,
   ecto_repos: [NissUi.Repo]
 
