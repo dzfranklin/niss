@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :niss_ui, correct_password: System.fetch_env!("NISS_PASSWORD")
+
 config :surface, :components, [
   {Surface.Components.Form.ErrorTag,
    default_translator: {NissUiWeb.ErrorHelpers, :translate_error}}

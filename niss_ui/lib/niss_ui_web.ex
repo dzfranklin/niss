@@ -17,6 +17,15 @@ defmodule NissUiWeb do
   and import those modules here.
   """
 
+  def plug do
+    quote do
+      import Plug.Conn
+      import Phoenix.Controller
+
+      unquote(view_helpers())
+    end
+  end
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: NissUiWeb
@@ -47,7 +56,7 @@ defmodule NissUiWeb do
       use Phoenix.LiveView,
         layout: {NissUiWeb.LayoutView, "live.html"}
 
-      unquote(view_helpers())
+      unquote(live_helpers())
     end
   end
 
@@ -56,7 +65,7 @@ defmodule NissUiWeb do
       use Surface.LiveView,
         layout: {NissUiWeb.LayoutView, "live.html"}
 
-      unquote(view_helpers())
+      unquote(live_helpers())
     end
   end
 
@@ -64,7 +73,7 @@ defmodule NissUiWeb do
     quote do
       use Phoenix.LiveComponent
 
-      unquote(view_helpers())
+      unquote(live_helpers())
     end
   end
 
@@ -72,7 +81,7 @@ defmodule NissUiWeb do
     quote do
       use Surface.LiveComponent
 
-      unquote(view_helpers())
+      unquote(live_helpers())
     end
   end
 
@@ -80,7 +89,7 @@ defmodule NissUiWeb do
     quote do
       use Surface.Component
 
-      unquote(view_helpers())
+      unquote(live_helpers())
     end
   end
 
@@ -115,6 +124,14 @@ defmodule NissUiWeb do
       import NissUiWeb.ErrorHelpers
       import NissUiWeb.Gettext
       alias NissUiWeb.Router.Helpers, as: Routes
+    end
+  end
+
+  defp live_helpers do
+    quote do
+      unquote(view_helpers())
+
+      import NissUiWeb.EnsureAuth, only: [ensure_auth_live: 2]
     end
   end
 
