@@ -1,5 +1,7 @@
 import Config
 
+config :niss_core, mock?: true
+
 config :niss_ui, :site_encrypt,
   db_folder: "/tmp/niss_site_encrypt_db_test",
   directory_url: {:internal, port: 4002}

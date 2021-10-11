@@ -32,6 +32,7 @@ defmodule NissUiWeb.Router do
 
     live "/", Live.Page.Home, :index
     get "/auth/logout", Auth, :logout
+    live "/ceiling-lights-figure-out-remote", Live.Page.CeilingLightsFigureOutRemote, :index
     live_dashboard "/dashboard", metrics: NissUiWeb.Telemetry
   end
 

@@ -33,6 +33,7 @@ defmodule NissUi.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:niss_core, path: "../niss_core"},
       {:site_encrypt, "~> 0.4"},
       {:httpoison, "~> 1.8"},
       {:phoenix, "~> 1.6.0"},
@@ -51,7 +52,8 @@ defmodule NissUi.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:telemetry, "~> 1.0", override: true},
-      {:surface, "~> 0.5.1"}
+      {:surface, "~> 0.5.1"},
+      {:contex, "~> 0.4.0"}
     ]
   end
 
