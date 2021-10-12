@@ -6,10 +6,10 @@ defmodule NissCore.RecordIR.Real do
 
   def start do
     {:ok, pin} = GPIO.open(@sensor_pin, :input)
-    GPIO.set_pull_mode(pin, :pullup)
+    :ok = GPIO.set_pull_mode(pin, :pullup)
 
     spawn(fn ->
-      GPIO.set_interrupts(pin, :both)
+      :ok = GPIO.set_interrupts(pin, :both)
       record_loop(pin, [])
     end)
   end
@@ -19,7 +19,7 @@ defmodule NissCore.RecordIR.Real do
 
     receive do
       {:result, pin, state} ->
-        GPIO.close(pin)
+        :ok = GPIO.close(pin)
         state_to_result(state)
     end
   end
