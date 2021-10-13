@@ -1,10 +1,12 @@
 defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
   use NissUiWeb, :surface_view
-  alias NissCore.RecordIR
+  alias NissCore.{RecordIR, ParseCeilingLightsSignal}
+  require Logger
 
   data recorder, :any, default: nil
-
-  data recordings, :any, default: []
+  data recordings, :any, default: %{}
+  data recordings_length, :integer, default: 0
+  data show_raw?, :boolean, default: false
 
   @impl true
   def mount(_params, session, socket) do
@@ -15,27 +17,42 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
   @impl true
   def render(assigns) do
     ~F"""
-    {#if is_nil(@recorder)}
-      <button :on-click="start" type="button">Start</button>
-    {#else}
-      <button :on-click="stop" type="button">Stop</button>
-    {/if}
+    <div>
+      {#if is_nil(@recorder)}
+        <button :on-click="start" type="button">Start</button>
+      {#else}
+        <button :on-click="stop" type="button">Stop</button>
+      {/if}
+
+      {#if @show_raw?}
+        <button :on-click="show-raw-off" type="button">Show parsed</button>
+      {#else}
+        <button :on-click="show-raw-on" type="button">Show raw</button>
+      {/if}
+    </div>
 
     <ul>
-      {#for {data, idx} <- Enum.with_index(@recordings)}
-        <li>
-          <div>
-            {plot(data)}
+      {#for {id, recording} <- ordered_recordings(@recordings, @recordings_length)}
+        <li :if={!is_nil(recording)}>
+          {#if @show_raw?}
+            {plot(recording.trimmed_raw)}
 
             <pre><code>
-            {inspect(data, limit: :infinity)}
+              {inspect(recording.trimmed_raw, limit: :infinity)}
             </code></pre>
-          </div>
 
-          <div>
-            <button :on-click="del-start" type="button" phx-value-idx={idx}>Delete start</button>
-            <button :on-click="del-end" type="button" phx-value-idx={idx}>Delete end</button>
-          </div>
+            <div>
+              <button :on-click="recording-trim-start" type="button" phx-value-id={id}>Trim start</button>
+              <button :on-click="recording-trim-end" type="button" phx-value-id={id}>Trim end</button>
+              <button :on-click="recording-trim-reset" type="button" phx-value-id={id}>Reset trimming</button>
+            </div>
+          {#else}
+            <pre><code>
+              {inspect(recording.parsed, limit: :infinity)}
+            </code></pre>
+          {/if}
+
+          <button :on-click="recording-del" type="button" phx-value-id={id}>Delete recording</button>
         </li>
       {/for}
     </ul>
@@ -50,41 +67,80 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
 
   @impl true
   def handle_event("stop", _, socket) do
-    data =
-      RecordIR.stop(socket.assigns.recorder)
-      |> strip_leading_junk()
-      |> strip_trailing_junk()
+    raw = RecordIR.stop(socket.assigns.recorder)
+
+    recording = %{
+      raw: raw,
+      trimmed_raw: raw,
+      parsed: ParseCeilingLightsSignal.parse(raw)
+    }
 
     socket =
       socket
       |> assign(recorder: nil)
-      |> update(:recordings, &[data | &1])
+      |> update(:recordings, &Map.put(&1, socket.assigns.recordings_length, recording))
+      |> update(:recordings_length, &(&1 + 1))
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_event("del-start", %{"idx" => idx}, socket) do
-    {:noreply, update_recording(socket, idx, &tl(&1))}
+  def handle_event("show-raw-off", _, socket) do
+    {:noreply, assign(socket, show_raw?: false)}
   end
 
   @impl true
-  def handle_event("del-end", %{"idx" => idx}, socket) do
-    {:noreply, update_recording(socket, idx, &Enum.slice(&1, 0, length(&1) - 1))}
+  def handle_event("show-raw-on", _, socket) do
+    {:noreply, assign(socket, show_raw?: true)}
   end
 
-  defp update_recording(socket, idx, mapper) do
-    idx = String.to_integer(idx)
+  @impl true
+  def handle_event("recording-trim-start", %{"id" => id}, socket) do
+    {:noreply, update_recording_trimmed(socket, id, &tl(&1))}
+  end
+
+  @impl true
+  def handle_event("recording-trim-end", %{"id" => id}, socket) do
+    {:noreply, update_recording_trimmed(socket, id, &Enum.slice(&1, 0, length(&1) - 1))}
+  end
+
+  @impl true
+  def handle_event("recording-trim-reset", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+
+    socket =
+      update(socket, :recordings, fn recordings ->
+        Map.update!(recordings, id, fn recording ->
+          Map.put(recording, :trimmed_raw, recording.raw)
+        end)
+      end)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("recording-del", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+
+    socket =
+      update(socket, :recordings, fn recordings ->
+        Map.delete(recordings, id)
+      end)
+
+    {:noreply, socket}
+  end
+
+  defp ordered_recordings(recordings, recordings_length) do
+    (recordings_length - 1)..0
+    |> Enum.map(&{&1, Map.get(recordings, &1)})
+  end
+
+  defp update_recording_trimmed(socket, id, mapper) do
+    id = String.to_integer(id)
 
     update(socket, :recordings, fn recordings ->
-      recordings
-      |> Enum.with_index()
-      |> Enum.map(fn {data, data_idx} ->
-        if data_idx == idx do
-          mapper.(data)
-        else
-          data
-        end
+      Map.update!(recordings, id, fn recording ->
+        Map.update!(recording, :trimmed_raw, &mapper.(&1))
       end)
     end)
   end
@@ -105,69 +161,5 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
     |> Contex.Dataset.new()
     |> Contex.Plot.new(Contex.LinePlot, 2_000, 200, smoothed: false)
     |> Contex.Plot.to_svg()
-  end
-
-  @tolerance 0.3
-
-  # Counts both ups and downs
-  @leading_indicator_count 17
-  @leading_indicator_length 600_000
-
-  def strip_leading_junk(data) do
-    Enum.reduce(data, {0, []}, fn {duration, value}, {count, out} ->
-      if count == @leading_indicator_count do
-        {count, [{duration, value} | out]}
-      else
-        if within_tolerance?(duration, @leading_indicator_length) do
-          {count + 1, out}
-        else
-          {0, out}
-        end
-      end
-    end)
-    |> elem(1)
-    |> Enum.reverse()
-  end
-
-  def strip_trailing_junk(data) do
-    idx = packet_end_idx(data)
-    Enum.slice(data, 0, idx)
-  end
-
-  @packet_end_high_count 3
-  @packet_end_low_count 4
-  @packet_end_high_length 1_600_000
-  @packet_end_low_length 600_000
-
-  defp packet_end_idx([]), do: 0
-
-  defp packet_end_idx(data) do
-    data
-    |> Enum.with_index()
-    |> Enum.reduce_while({0, 0}, fn {{duration, value}, idx}, {high_count, low_count} ->
-      if high_count == @packet_end_high_count && low_count == @packet_end_low_count do
-        {:halt, idx - @packet_end_high_count - @packet_end_low_count}
-      else
-        case value do
-          0 ->
-            if within_tolerance?(duration, @packet_end_low_length) do
-              {:cont, {high_count, low_count + 1}}
-            else
-              {:cont, {0, 0}}
-            end
-
-          1 ->
-            if within_tolerance?(duration, @packet_end_high_length) do
-              {:cont, {high_count + 1, low_count}}
-            else
-              {:cont, {0, 0}}
-            end
-        end
-      end
-    end)
-  end
-
-  defp within_tolerance?(potential, expected) do
-    potential > expected * (1.0 - @tolerance) && potential < expected * (1.0 + @tolerance)
   end
 end

@@ -1,14 +1,18 @@
 defmodule NissCore.RecordIR.Mock do
   require Logger
+  @compile if Mix.env() == :test, do: :export_all
 
   def start do
     Logger.debug("Pretending to start")
-    spawn(fn -> nil end)
+    :mock_recorder
   end
 
-  def stop(_pid) do
+  def stop(:mock_recorder) do
     Logger.debug("Pretending to have received S2/B signal")
+    sample_signal()
+  end
 
+  defp sample_signal do
     [
       {491_871_547, 1},
       {9_075_091, 0},

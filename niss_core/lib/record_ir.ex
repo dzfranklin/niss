@@ -3,15 +3,17 @@ defmodule NissCore.RecordIR do
 
   NissCore._setup_dispatch(__MODULE__.Real, __MODULE__.Mock)
 
+  @type recorder :: pid()
   @type duration_nanos :: integer()
   @type state :: 1 | 0
+  @type recording :: [{duration_nanos(), state()}]
 
-  @spec start :: pid()
+  @spec start :: recorder()
   def start do
     dispatch(:start, [])
   end
 
-  @spec stop(pid()) :: [{duration_nanos(), state()}]
+  @spec stop(recorder()) :: recording()
   def stop(pid) do
     dispatch(:stop, [pid])
   end

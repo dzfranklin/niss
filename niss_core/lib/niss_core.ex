@@ -3,6 +3,20 @@ defmodule NissCore do
   Documentation for `NissCore`.
   """
 
+  @doc """
+  Returns if `potential` is within +- `tolerance` percent of expected
+  """
+  def within_tolerance?(potential, expected, tolerance) do
+    potential > expected * (1.0 - tolerance) && potential < expected * (1.0 + tolerance)
+  end
+
+  @doc """
+  Returns if `potential` is above `expected` plus `tolerance` percent of `expected1
+  """
+  def above_tolerance?(potential, expected, tolerance) do
+    potential > expected * (1.0 + tolerance)
+  end
+
   defmacro _setup_dispatch(real_mod, mock_mod) do
     quote do
       defp dispatch(fun, args) do
