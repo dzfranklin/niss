@@ -21,7 +21,7 @@ defmodule NissCore.CeilingStrip.ParseSignal do
 
   @low_bit_duration 550_000
   @high_bit_duration 550_000 * 3
-  @bit_duration_tolerance 0.30
+  @bit_duration_tolerance 0.40
 
   defp sanity_check_values(signal) do
     Enum.map(signal, fn
@@ -152,5 +152,5 @@ defmodule NissCore.CeilingStrip.ParseSignal do
     end
   end
 
-  defp valid_pulse_duration?(duration), do: within_tolerance?(duration, 600_000, 0.1)
+  defp valid_pulse_duration?(duration), do: within_tolerance?(duration, 600_000, 0.25)
 end

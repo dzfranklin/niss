@@ -100,10 +100,10 @@ defmodule NissCore.CeilingStrip.ParseSignalTest do
           {580_000, 0},
           {4, 1},
           # Pulse above upper tolerance
-          {700_000, 0},
+          {800_000, 0},
           {5, 1},
           # Pulse below lower tolerance
-          {500_000, 0},
+          {400_000, 0},
           {6, 1}
         ])
 
@@ -112,9 +112,9 @@ defmodule NissCore.CeilingStrip.ParseSignalTest do
         2,
         3,
         4,
-        {:unrecognized_pulse, 700_000},
+        {:unrecognized_pulse, 800_000},
         5,
-        {:unrecognized_pulse, 500_000},
+        {:unrecognized_pulse, 400_000},
         6
       ]
 
