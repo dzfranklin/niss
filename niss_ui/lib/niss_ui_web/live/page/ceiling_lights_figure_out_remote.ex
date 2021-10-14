@@ -1,6 +1,6 @@
 defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
   use NissUiWeb, :surface_view
-  alias NissCore.{RecordIR, ParseCeilingLightsSignal}
+  alias NissCore.{RecordIR, CeilingStrip.ParseSignal}
   require Logger
 
   data recorder, :any, default: nil
@@ -72,7 +72,7 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
     recording = %{
       raw: raw,
       trimmed_raw: raw,
-      parsed: ParseCeilingLightsSignal.parse(raw)
+      parsed: ParseSignal.parse(raw)
     }
 
     socket =

@@ -1,4 +1,4 @@
-defmodule NissCore.ParseCeilingLightsSignal do
+defmodule NissCore.CeilingStrip.ParseSignal do
   import NissCore, only: [within_tolerance?: 3, above_tolerance?: 3]
   require Logger
   @compile if Mix.env() == :test, do: :export_all

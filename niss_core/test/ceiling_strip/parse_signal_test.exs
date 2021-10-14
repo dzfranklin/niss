@@ -1,6 +1,6 @@
-defmodule NissCore.ParseCeilingLightsSignalTest do
+defmodule NissCore.CeilingStrip.ParseSignalTest do
   use NissCore.TestCase
-  alias NissCore.ParseCeilingLightsSignal, as: Subject
+  alias NissCore.CeilingStrip.ParseSignal, as: Subject
   alias NissCore.IRSignalSupport
 
   @sample_signal """
