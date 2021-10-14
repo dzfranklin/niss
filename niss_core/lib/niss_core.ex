@@ -17,6 +17,7 @@ defmodule NissCore do
     potential > expected * (1.0 + tolerance)
   end
 
+  @doc false
   defmacro _setup_dispatch(real_mod, mock_mod) do
     quote do
       defp dispatch(fun, args) do
