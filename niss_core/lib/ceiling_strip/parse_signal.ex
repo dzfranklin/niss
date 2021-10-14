@@ -1,5 +1,6 @@
 defmodule NissCore.CeilingStrip.ParseSignal do
   import NissCore, only: [within_tolerance?: 3, above_tolerance?: 3]
+  alias NissCore.CeilingStrip.Signals
   require Logger
   @compile if Mix.env() == :test, do: :export_all
 
@@ -8,8 +9,9 @@ defmodule NissCore.CeilingStrip.ParseSignal do
   """
   @type packet :: bitstring()
   @type invalid_packet :: [0 | 1 | term()]
+  @type parse_result :: [{:ok, packet()} | {:error, invalid_packet()}]
 
-  @spec parse(NissCore.RecordIR.recording()) :: [{:ok, packet()} | {:error, invalid_packet()}]
+  @spec parse(NissCore.RecordIR.recording()) :: parse_result()
   def parse(signal) do
     signal
     |> sanity_check_values()
@@ -17,6 +19,21 @@ defmodule NissCore.CeilingStrip.ParseSignal do
     |> Enum.map(&packet_convert_to_valley_durations/1)
     |> Enum.map(&packet_convert_valley_durations_to_bits/1)
     |> Enum.map(&packet_convert_list_to_bitstring_or_invalid/1)
+  end
+
+  @spec name_recognized(parse_result()) :: [Signals.name()]
+  def name_recognized(parsed) do
+    parsed
+    |> Enum.filter(fn
+      {:ok, _} -> true
+      {:error, _} -> false
+    end)
+    |> Enum.map(fn {:ok, packet} -> Signals.name_of(packet) end)
+    |> Enum.filter(fn
+      {:ok, _} -> true
+      {:error, _} -> false
+    end)
+    |> Enum.map(fn {:ok, name} -> name end)
   end
 
   @low_bit_duration 550_000

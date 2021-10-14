@@ -47,6 +47,8 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
               <button :on-click="recording-trim-reset" type="button" phx-value-id={id}>Reset trimming</button>
             </div>
           {#else}
+            {format_signal_names(recording.signal_names)}
+
             <pre><code>
               {inspect(recording.parsed, limit: :infinity)}
             </code></pre>
@@ -68,11 +70,13 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
   @impl true
   def handle_event("stop", _, socket) do
     raw = RecordIR.stop(socket.assigns.recorder)
+    parsed = ParseSignal.parse(raw)
 
     recording = %{
       raw: raw,
       trimmed_raw: raw,
-      parsed: ParseSignal.parse(raw)
+      parsed: parsed,
+      signal_names: ParseSignal.name_recognized(parsed)
     }
 
     socket =
@@ -128,6 +132,12 @@ defmodule NissUiWeb.Live.Page.CeilingLightsFigureOutRemote do
       end)
 
     {:noreply, socket}
+  end
+
+  defp format_signal_names(names) do
+    names
+    |> Enum.map(&inspect/1)
+    |> Enum.join(", ")
   end
 
   defp ordered_recordings(recordings, recordings_length) do

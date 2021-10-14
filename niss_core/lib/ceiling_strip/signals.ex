@@ -26,6 +26,8 @@ defmodule NissCore.CeilingStrip.Signals do
     white_dimmer: <<0, 255, 200, 55>>
   }
 
+  @signal_to_name Map.new(@name_to_signal, fn {name, signal} -> {signal, name} end)
+
   @moduledoc """
   Definitions for supported signals.
 
@@ -56,4 +58,13 @@ defmodule NissCore.CeilingStrip.Signals do
   See module-level documentation for list of names.
   """
   def signal!(name), do: Map.fetch!(@name_to_signal, name)
+
+  @spec name_of(signal()) :: {:ok, name()} | {:error, :unrecognized}
+  def name_of(signal) do
+    Map.get(@signal_to_name, signal)
+    |> case do
+      nil -> {:error, :unrecognized}
+      name -> {:ok, name}
+    end
+  end
 end
