@@ -1,7 +1,0 @@
-<%= form_for @change, Routes.auth_path(@conn, :login_post), fn f -> %>
-    <%= label f, :password %>
-    <%= password_input f, :password %>
-    <%= error_tag f, :password %>
-
-    <%= submit "Login" %>
-<% end %>
