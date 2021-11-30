@@ -17,7 +17,7 @@ jobs:
         steps:
             - name: Install and configure wg
               env:
-                  WG_CONF_B64: ${{ secrets.wg_conf_b64}
+                  WG_CONF_B64: ${{ secrets.wg_conf_b64 }}
               run: |
                   sudo apt install wireguard
                   echo "$WG_CONF_B64" | base64 -d | sudo tee /etc/wireguard/wg0.conf
