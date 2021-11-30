@@ -30,10 +30,10 @@ jobs:
                   mkdir -p ~/.ssh
                   echo "$PRIV_KEY_B64" | base64 -d > ~/.ssh/id_ed25519
                   chmod 600 ~/.ssh/id_ed25519
-                  cat << EOF
-Host $NISS_LOCAL
-    StrictHostKeyChecking no
-EOF
+                  cat >~/.ssh/config << EOF
+                  Host $NISS_LOCAL
+                      StrictHostKeyChecking no
+                  EOF
 
             - name: Checkout commit
               uses: actions/checkout@v2
