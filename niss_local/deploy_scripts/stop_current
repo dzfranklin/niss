@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# NOTE: Expects to be run as deploy in deploy directory (/home/deploy on niss-local)
+
+fail() {
+    echo "[stop-current] exiting: $1" 1>&2
+    exit 1
+}
+
+# If there is an old release, stop it
+if [ -f current_release ]; then
+    NAME="$(cat current_release)"
+    BIN="./releases/$NAME/bin/niss_local"
+    if [ ! -f "$BIN" ]; then
+        fail "Current release $NAME does not exist"
+    fi
+
+    "$BIN" stop
+else
+    fail "No current release set"
+fi

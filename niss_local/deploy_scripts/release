@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# NOTE: Expects to run as deploy in deploy directory (/home/deploy on niss-local)
+
+fail() {
+    echo "[release] exiting: $1" 1>&2
+    exit 1
+}
+
+NAME="$1"
+
+# NOTE: We have sudo permission for these specific commands only
+
+sudo systemctl stop niss-local
+echo "$NAME" >current_release
+sudo systemctl start niss-local
+
+if systemctl is-active niss-local; then
+    echo "[release] Successfully started niss-local"
+else
+    fail "Failed to start niss-local"
+fi
