@@ -54,6 +54,13 @@ pi@niss-local> sudo reboot
 pi@niss-local> sudo wg show
 ```
 
+# TinyTuya
+
+```bash
+pi@niss-local> sudo apt-get install python3-crypto python3-pip
+pi@niss-local> python -m pip install tinytuya
+```
+
 ## Setup env variables
 
 Copy the contents of the 1password note "niss local env" to `/home/deploy/env`
