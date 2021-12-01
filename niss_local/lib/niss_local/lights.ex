@@ -8,18 +8,48 @@ defmodule NissLocal.Lights do
   """
   require Logger
 
+  def set!(status) do
+    fetch_configs!()
+    |> Enum.map(fn {_name, config} ->
+      Task.async(fn -> set_by!(config, status) end)
+    end)
+    |> Task.await_many(:timer.minutes(5))
+
+    nil
+  end
+
   def set!(name, status) do
-    fetch_config!(name)
-    |> run_tuya([
-      "set_status",
-      if(status, do: "true", else: "false")
-    ])
+    name
+    |> fetch_config!()
+    |> set_by!(status)
+  end
+
+  defp set_by!(config, status) do
+    {:ok, _} =
+      run_tuya(config, [
+        "set_status",
+        if(status, do: "true", else: "false")
+      ])
+
+    nil
+  end
+
+  def get! do
+    fetch_configs!()
+    |> Enum.map(fn {name, config} ->
+      Task.async(fn -> {name, get_by!(config)} end)
+    end)
+    |> Task.await_many(:timer.minutes(5))
   end
 
   def get!(name) do
-    {:ok, stdout} =
-      fetch_config!(name)
-      |> run_tuya(["get_status"])
+    name
+    |> fetch_config!()
+    |> get_by!()
+  end
+
+  defp get_by!(config) do
+    {:ok, stdout} = run_tuya(config, ["get_status"])
 
     case String.trim(stdout) do
       "1" -> true
@@ -27,9 +57,13 @@ defmodule NissLocal.Lights do
     end
   end
 
-  def fetch_config!(name) do
+  defp fetch_configs! do
     Application.fetch_env!(:niss_local, NissLocal.Lights)
     |> Keyword.fetch!(:plugs)
+  end
+
+  defp fetch_config!(name) do
+    fetch_configs!()
     |> Keyword.fetch!(name)
   end
 
@@ -55,7 +89,7 @@ defmodule NissLocal.Lights do
       )
 
     if status == 0 do
-      Logger.debug("Successfully manipulated plug labelled #{inspect(label)}")
+      Logger.info("Successfully manipulated plug labelled #{inspect(label)}: #{inspect(args)}")
       {:ok, stdout}
     else
       Logger.warn("Failed to manipulate plug labelled #{inspect(label)}, got stdout:\n#{stdout}")
