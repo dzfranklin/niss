@@ -54,22 +54,6 @@ pi@niss-local> sudo reboot
 pi@niss-local> sudo wg show
 ```
 
-## Setup deploy user
-
-```bash
-pi@niss-local> sudo useradd -m deploy
-pi@niss-local> sudo mkdir -p /home/deploy/.ssh
-pi@niss-local> sudo cp .ssh/authorized_keys /home/deploy/.ssh/
-pi@niss-local> sudo chown -R deploy /home/deploy/.ssh
-```
-
-```bash
-deploy@niss-local> mkdir -p ~/to_build
-deploy@niss-local> mkdir -p ~/releases
-```
-
-Copy `net/priv_github_cd_ssh.pub` into `authorized_keys`.
-
 ## Setup env variables
 
 Copy the contents of the 1password note "niss local env" to `/home/deploy/env`
@@ -81,6 +65,8 @@ darp> rsync niss_local/deploy_scripts/* deploy@niss-local.local:/home/deploy/
 ```
 
 ## Setup systemd service
+
+TODO: Write systemd service
 
 ```bash
 pi@niss-local> sudo mv /home/deploy/niss-local.service /etc/systemd/system/

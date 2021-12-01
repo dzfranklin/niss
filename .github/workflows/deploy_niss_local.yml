@@ -1,63 +1,71 @@
 name: deploy_niss_local
 concurrency: niss_local
 on:
-    push:
-        paths:
-            - "niss_local/**"
+  push:
+    paths:
+      - "niss_local/**"
 defaults:
-    run:
-        shell: bash
-        working-directory: niss_local
+  run:
+    shell: bash
+    working-directory: niss_local
 jobs:
-    deploy:
-        runs-on: hexpm/elixir:1.12.2-erlang-24.1.7-ubuntu-xenial-20210114
+  deploy:
+    runs-on: ubuntu-20.04
+    env:
+      MIX_ENV: prod
+      NISS_LOCAL: "niss-local._peer.internal"
+    steps:
+      - name: Setup asdf
+        run: |
+          git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.8
+          ~/.asdf/bin/asdf plugin add erlang
+          ~/.asdf/bin/asdf plugin add elixir
+      - name: Intall asdf deps
+        run: |
+
+      - name: Install and configure wg
         env:
-            MIX_ENV: prod
-            NISS_LOCAL: "niss-local._peer.internal"
-        steps:
-            - name: Install and configure wg
-              env:
-                  WG_CONF_B64: ${{ secrets.wg_conf_b64 }}
-              run: |
-                  sudo apt install wireguard
-                  echo "$WG_CONF_B64" | base64 -d | sudo tee /etc/wireguard/wg0.conf
-                  wg-quick up wg0
+          WG_CONF_B64: ${{ secrets.wg_conf_b64 }}
+        run: |
+          sudo apt install wireguard
+          echo "$WG_CONF_B64" | base64 -d | sudo tee /etc/wireguard/wg0.conf
+          wg-quick up wg0
 
-            - name: Configure ssh
-              env:
-                  PRIV_KEY_B64: ${{ secrets.ssh_priv_key_b64 }}
-              run: |
-                  mkdir -p ~/.ssh
-                  echo "$PRIV_KEY_B64" | base64 -d > ~/.ssh/id_ed25519
-                  chmod 600 ~/.ssh/id_ed25519
-                  cat >~/.ssh/config << EOF
-                  Host $NISS_LOCAL
-                      StrictHostKeyChecking no
-                  EOF
+      - name: Configure ssh
+        env:
+          PRIV_KEY_B64: ${{ secrets.ssh_priv_key_b64 }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$PRIV_KEY_B64" | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >~/.ssh/config << EOF
+          Host $NISS_LOCAL
+              StrictHostKeyChecking no
+          EOF
 
-            - name: Checkout commit
-              uses: actions/checkout@v2
+      - name: Checkout commit
+        uses: actions/checkout@v2
 
-            - name: Build
-              run: |
-                      rsync -e ssh -r "." "deploy@$NISS_LOCAL:/home/deploy/to_build/$GITHUB_SHA"
-                      ssh "deploy@$NISS_LOCAL" "cd /home/deploy && ./build $GITHUB_SHA"
+      - name: Build
+        run: |
+          rsync -e ssh -r "." "deploy@$NISS_LOCAL:/home/deploy/to_build/$GITHUB_SHA"
+          ssh "deploy@$NISS_LOCAL" "cd /home/deploy && ./build $GITHUB_SHA"
 
-            - name: Release
-              run: |
-                      ssh "deploy@$NISS_LOCAL" "cd /home/deploy && ./release $GITHUB_SHA"
+      - name: Release
+        run: |
+          ssh "deploy@$NISS_LOCAL" "cd /home/deploy && ./release $GITHUB_SHA"
 
-            - name: Install deps
-              run: mix deps.get --only prod && mix deps.compile sentry --force
+      - name: Install deps
+        run: mix deps.get --only prod && mix deps.compile sentry --force
 
-            - name: Build
-              run: mix release
+      - name: Build
+        run: mix release
 
-            - name: Deploy
-              run: |
-                  COMMIT=$(git rev-parse --short HEAD)
-                  rsync -e ssh -r "_build/prod/rel/niss_local" "deploy@$NISS_LOCAL:/home/deploy/releases/$COMMIT"
-                  ssh "deploy@$NISS_LOCAL" "cd /home/deploy && ./upgrade_to $COMMIT"
+      - name: Deploy
+        run: |
+          COMMIT=$(git rev-parse --short HEAD)
+          rsync -e ssh -r "_build/prod/rel/niss_local" "deploy@$NISS_LOCAL:/home/deploy/releases/$COMMIT"
+          ssh "deploy@$NISS_LOCAL" "cd /home/deploy && ./upgrade_to $COMMIT"
 
-            - name: Bring wireguard down
-              run: wg-quick down wg0
+      - name: Bring wireguard down
+        run: wg-quick down wg0
