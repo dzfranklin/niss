@@ -54,41 +54,38 @@ pi@niss-local> sudo reboot
 pi@niss-local> sudo wg show
 ```
 
-# TinyTuya
+## Asdf
 
 ```bash
-pi@niss-local> sudo apt-get install python3-crypto python3-pip
-pi@niss-local> python -m pip install tinytuya
+pi@niss> sudo apt install libssl-dev automake autoconf libncurses5-dev
+pi@niss> git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+pi@niss> asdf plugin add erlang
+pi@niss> asdf plugin add elixir
+```
+
+Edit `~/.bashrc` to include
+
+```bash
+source "$HOME/.asdf/asdf.sh"
+```
+
+```bash
+pi@niss-local> sudo apt install -y erlang elixir
+```
+
+## TinyTuya
+
+```bash
+pi@niss-local> sudo apt install -y python3-crypto python3-pip
+pi@niss-local> python3 -m pip install tinytuya
 ```
 
 ## Setup env variables
 
-Copy the contents of the 1password note "niss local env" to `/home/deploy/env`
+Copy the contents of the 1password note "niss local env" to `/home/pi/env`
 
-## Copy over deploy scripts
-
-```bash
-darp> rsync niss_local/deploy_scripts/* deploy@niss-local.local:/home/deploy/
-```
-
-## Setup systemd service
-
-TODO: Write systemd service
+Edit `~/.bashrc` to include the
 
 ```bash
-pi@niss-local> sudo mv /home/deploy/niss-local.service /etc/systemd/system/
-pi@niss-local> sudo systemctl enable niss-local
-```
-
-Copy the following into a new file `/etc/sudoers.d/deploy
-(based on <https://unix.stackexchange.com/questions/192706/how-could-we-allow-non-root-users-to-control-a-systemd-service>)
-
-```text
-%deploy ALL= NOPASSWD: /bin/systemctl start niss-local
-%deploy ALL= NOPASSWD: /bin/systemctl stop niss-local
-%deploy ALL= NOPASSWD: /bin/systemctl restart niss-local
-```
-
-```bash
-pi@niss-local> sudo chmod 0440 /etc/sudoers.d/deploy
+source "$HOME/env"
 ```
