@@ -12,7 +12,7 @@ with darp (my laptop) authorized.
 ## Useful tools
 
 ```bash
-pi@niss-local> sudo apt install -y neovim
+pi@niss-local> sudo apt install -y neovim dnsutils
 ```
 
 ## Wireguard
