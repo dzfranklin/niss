@@ -80,12 +80,30 @@ pi@niss-local> sudo apt install -y python3-crypto python3-pip
 pi@niss-local> python3 -m pip install tinytuya
 ```
 
+## Locale
+
+Required by elixir. Gen root with `sudo su`.
+
+```bash
+darp@niss-local> export LANG=en_US.UTF-8 && echo $LANG UTF-8 > /etc/locale.gen && locale-gen && update-locale LANG=$LANG
+```
+
 ## Setup env variables
 
 Copy the contents of the 1password note "niss local env" to `/home/pi/env`
 
-Edit `~/.bashrc` to include the
+
+## Setup service
+
+See <https://elixirforum.com/t/elixir-apps-as-systemd-services-info-wiki/2400>
+
+Copy priv/niss-local.service to `/etc/systemd/system/niss-local.service
 
 ```bash
-source "$HOME/env"
+darp> rsync niss_local/priv/niss-local.service pi@niss-local.local:/home/pi/
+pi@niss> sudo mv niss-local.service /etc/systemd/system/
+pi@niss> sudo systemctl daemon-reload
+pi@niss> sudo systemctl enable niss-local
 ```
+
+Check status with `systemctl status niss-local`

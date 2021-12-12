@@ -26,7 +26,8 @@ defmodule NissLocal.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:sentry, "~> 8.0"},
       {:jason, "~> 1.1"},
-      {:hackney, "~> 1.8"}
+      {:hackney, "~> 1.8"},
+      {:systemd, "~> 0.6"}
     ]
   end
 

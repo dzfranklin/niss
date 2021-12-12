@@ -6,7 +6,10 @@ defmodule NissLocal.Application do
   def start(_type, _args) do
     Logger.add_backend(Sentry.LoggerBackend)
 
-    children = []
+    children = [
+      # Signal to systemd
+      :systemd.ready()
+    ]
 
     opts = [strategy: :one_for_one, name: NissLocal.Supervisor]
     Supervisor.start_link(children, opts)

@@ -1,0 +1,23 @@
+[Unit]
+Description=Niss Local
+After=local-fs.target network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/niss_local/_build/prod/rel/niss_local
+ExecStart=/home/pi/niss_local/_build/prod/rel/niss_local/bin/niss_local start
+ExecStop=/home/pi/niss_local/_build/prod/rel/niss_local/bin/niss_local stop
+EnvironmentFile=/home/pi/env
+Environment=LANG=en_US.utf8
+Environment=MIX_ENV=prod
+LimitNOFILE=65535
+UMask=0027
+SyslogIdentifier=fotm
+Restart=always
+Type=notify
+StartLimitAction=none
+
+[Install]
+WantedBy=multi-user.target
