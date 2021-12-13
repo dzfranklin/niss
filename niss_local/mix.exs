@@ -24,6 +24,7 @@ defmodule NissLocal.MixProject do
   defp deps do
     [
       {:circuits_gpio, "~> 0.4"},
+      {:libcluster, "~> 3.3"},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:sentry, "~> 8.0"},
       {:jason, "~> 1.1"},

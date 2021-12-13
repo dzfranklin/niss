@@ -7,6 +7,8 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 # The block below contains prod specific runtime configuration.
 if config_env() == :prod do
+  app_name = System.get_env("FLY_APP_NAME") || raise "FLY_APP_NAME not available"
+
   database_url =
     System.get_env("UI_CONN_URL") || raise "environment variable UI_CONN_URL is missing."
 
@@ -36,6 +38,27 @@ if config_env() == :prod do
       port: String.to_integer(System.get_env("PORT") || "4000")
     ],
     secret_key_base: secret_key_base
+
+  # Configure clustering
+
+  config :libcluster,
+    debug: true,
+    topologies: [
+      fly6pn: [
+        strategy: Cluster.Strategy.DNSPoll,
+        config: [
+          polling_interval: 5_000,
+          query: "#{app_name}.internal",
+          node_basename: app_name
+        ]
+      ],
+      local: [
+        strategy: Cluster.Strategy.Epmd,
+        config: [
+          hosts: [:"niss_local@niss-local._peer.internal"]
+        ]
+      ]
+    ]
 
   # ## Configuring the mailer
   #

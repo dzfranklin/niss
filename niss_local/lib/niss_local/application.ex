@@ -6,7 +6,11 @@ defmodule NissLocal.Application do
   def start(_type, _args) do
     Logger.add_backend(Sentry.LoggerBackend)
 
+    topologies = Application.get_env(:libcluster, :topologies) || []
+
     children = [
+      # Start Cluster
+      {Cluster.Supervisor, [topologies, [name: NissLocal.ClusterSupervisor]]},
       # Signal to systemd
       :systemd.ready()
     ]

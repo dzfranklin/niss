@@ -10,7 +10,8 @@ defmodule NissUi.MixProject do
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: releases()
     ]
   end
 
@@ -33,6 +34,7 @@ defmodule NissUi.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:libcluster, "~> 3.3"},
       {:phoenix, "~> 1.6.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
@@ -64,6 +66,17 @@ defmodule NissUi.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"]
+    ]
+  end
+
+  defp releases do
+    [
+      niss_ui: [
+        include_executables_for: [:unix],
+        # See <https://fly.io/docs/app-guides/elixir-static-cookie/>
+        # Generate with `Base.url_encode64(:crypto.strong_rand_bytes(40))`
+        cookie: System.get_env("NISS_COOKIE", "DUMMY_COOKIE")
+      ]
     ]
   end
 end
