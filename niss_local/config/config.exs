@@ -13,12 +13,12 @@ config :niss_local, NissLocal.Lights,
   plugs: [
     lime: [
       label: "A",
-      ip: "192.168.1.8",
+      ip: "192.168.1.2",
       id: "eb5d7cdb50931846682f2q"
     ],
     chillies: [
       label: "B",
-      ip: "192.168.1.9",
+      ip: "192.168.1.3",
       id: "eb83d0090f803ebfbcgtci"
     ]
   ]
