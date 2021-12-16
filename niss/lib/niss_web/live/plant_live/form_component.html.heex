@@ -1,0 +1,64 @@
+<div>
+  <h2><%= @title %></h2>
+
+  <.form
+    let={f}
+    for={@changeset}
+    id="plant-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save">
+  
+    <%= label f, :identifier %>
+    <%= text_input f, :identifier, autocomplete: "off" %>
+    <%= error_tag f, :identifier %>
+
+    <%= label f, :timezone %>
+    <%= text_input f, :timezone %>
+    <%= error_tag f, :timezone %>
+
+    <%= label f, :lights_on %>
+    <%= time_select f, :lights_on %>
+    <%= error_tag f, :lights_on %>
+  
+    <div>
+      <%= label f, :lights_duration %>
+      <%= time_select f, :lights_duration %>
+      <%= error_tag f, :lights_duration %>
+
+      <%= if !is_nil(lights_off(@changeset)) do %>
+        <span>Lights off at <%= lights_off(@changeset) %></span>
+      <% end %>
+    </div>
+
+    <%= label f, :watering_interval_days %>
+    <%= number_input f, :watering_interval_days %>
+    <%= error_tag f, :watering_interval_days %>
+ 
+    <%= label f, :watering_time %>
+    <%= time_select f, :watering_time %>
+    <%= error_tag f, :watering_time %>
+   
+    <%= label f, :watering_duration_secs %>
+    <%= number_input f, :watering_duration_secs %>
+    <%= error_tag f, :watering_duration_secs %>
+
+    <%= label f, :tank_base_area do %>
+      <!-- TODO: superscript -->
+      Tank base area <span>(m^2)</span>
+    <% end %>
+    <%= number_input f, :tank_base_area %>
+    <%= error_tag f, :tank_base_area %>
+
+    <%= label f, :tank_max_depth do %>
+      <!-- TODO: superscript -->
+      Tank max depth <span>(m)</span>
+    <% end %>
+    <%= number_input f, :tank_max_depth %>
+    <%= error_tag f, :tank_max_depth %>
+
+    <div>
+      <%= submit "Save", phx_disable_with: "Saving..." %>
+    </div>
+  </.form>
+</div>

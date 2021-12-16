@@ -34,6 +34,13 @@ defmodule NissWeb.Router do
 
     get "/", PageController, :index
     post "/auth/logout", AuthController, :do_logout
+
+    live "/plants", PlantLive.Index, :index
+    live "/plants/new", PlantLive.Index, :new
+    live "/plants/:id/edit", PlantLive.Index, :edit
+
+    live "/plants/:id", PlantLive.Show, :show
+    live "/plants/:id/show/edit", PlantLive.Show, :edit
   end
 
   scope "/twilio-hook", NissWeb do

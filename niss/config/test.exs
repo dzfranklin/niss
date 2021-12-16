@@ -1,5 +1,15 @@
 import Config
 
+config :niss, Niss.Application,
+  cluster: false,
+  executor: false,
+  tank_level_monitor: false
+
+config :niss, :adapters,
+  now: Niss.Now.MockImpl,
+  local: Niss.Local.MockImpl,
+  plants: Niss.Plants.MockImpl
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

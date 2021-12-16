@@ -1,102 +1,50 @@
 defmodule Niss.Plants do
-  use Niss.Query
-  alias Timex.Duration
-  alias Ecto.Changeset
-  alias Niss.Repo
-  alias Niss.Plants.{Plant, WateringRecord, LightingRecord}
+  alias __MODULE__.{WateringRecord, LightingRecord, TankLevelRecord}
+
+  @adapter Application.fetch_env!(:niss, :adapters)[:plants]
 
   @doc """
-  Calculates when to change the light and what to change it to.
-
-  Returns {datetime, on_or_off}
+  Get the (cached) water volume of the plant's tank. Units are liters.
   """
-  @spec next_light_change(Plant.t()) :: {DateTime.t(), bool()}
-  def next_light_change(
-        %Plant{lights_on: on_time, lights_duration: duration} = plant,
-        now \\ DateTime.utc_now()
-      ) do
-    # TODO: logic is wrong
-    on_at =
-      now
-      |> Timex.beginning_of_day()
-      |> Timex.add(Duration.from_time(on_time))
+  @callback tank_level(Plant.t()) :: TankLevelRecord.t() | nil
+  defdelegate tank_level(plant), to: @adapter
 
-    if Time.compare(on_time, DateTime.to_time(now)) != :gt do
-      # Lights should be on
-      if last_scheduled_lighting?(plant).status do
-        # Light correctly on
-        off_at = Timex.add(on_at, Duration.from_time(duration))
-
-        {off_at, false}
-      else
-        # Light incorrectly off
-        {now, true}
-      end
-    else
-      # Lights currently correctly off
-      {on_at, true}
-    end
-  end
-
-  defp last_scheduled_lighting?(plant) do
-    LightingRecord
-    |> where(plant_id: ^plant.id, scheduled: true)
-    |> get_last(:time)
-  end
+  @callback create_tank_level_record(map()) ::
+              {:ok, TankLevelRecord.t()} | {:error, Changeset.t()}
+  defdelegate create_tank_level_record(attrs), to: @adapter
 
   @doc """
-  Calculates when to water the plant next and for how long.
-
-  Returns {datetime, duration_secs}
+  Execute a watering or lighting record. The `at` field is overridden with the
+  time of execution, and a warning is raised if it is more than a minute from
+  the current time.
   """
-  @spec next_watering(Plant.t()) :: {DateTime.t(), integer()}
-  def next_watering(%Plant{} = plant, now \\ DateTime.utc_now()) do
-    last = last_scheduled_watering(plant).start || now
+  @callback execute!(WateringRecord.t() | LightingRecord.t()) :: nil
+  defdelegate execute!(record), to: @adapter
 
-    datetime =
-      last
-      |> Timex.beginning_of_day()
-      |> Timex.add(Duration.from_days(plant.watering_interval_days))
-      |> Timex.add(Duration.from_time(plant.watering_time))
+  @callback scheduled_lighting(Plant.t()) :: LightingRecord.t()
+  defdelegate scheduled_lighting(plant), to: @adapter
 
-    {datetime, plant.watering_duration_secs}
-  end
+  @callback scheduled_watering(Plant.t()) :: WateringRecord.t()
+  defdelegate scheduled_watering(plant), to: @adapter
 
-  defp last_scheduled_watering(%Plant{} = plant) do
-    WateringRecord
-    |> where(plant_id: ^plant.id, scheduled?: true)
-    |> get_last(:start)
-  end
+  @callback list :: [Plant.t()]
+  defdelegate list, to: @adapter
 
-  @spec list :: [Plant.t()]
-  def list do
-    Repo.all(Plant)
-  end
+  @callback get!(Plant.id()) :: Plant.t()
+  defdelegate get!(id), to: @adapter
 
-  @spec get!(Plant.id()) :: Plant.t()
-  def get!(id), do: Repo.get!(Plant, id)
+  @callback create(map()) :: {:ok, Plant.t()} | {:error, Changeset.t()}
+  defdelegate create(attrs), to: @adapter
 
-  @spec create(map()) :: {:ok, Plant.t()} | {:error, Changeset.t()}
-  def create(attrs \\ %{}) do
-    %Plant{}
-    |> Plant.changeset(attrs)
-    |> Repo.insert()
-  end
+  @callback update(Plant.t(), map()) :: {:ok, Plant.t()} | {:error, Changeset.t()}
+  defdelegate update(plant, attrs), to: @adapter
 
-  @spec update(Plant.t(), map()) :: {:ok, Plant.t()} | {:error, Changeset.t()}
-  def update(%Plant{} = plant, attrs) do
-    plant
-    |> Plant.changeset(attrs)
-    |> Repo.update()
-  end
+  @callback delete(map()) :: {:ok, Plant.t()} | {:error, Changeset.t()}
+  defdelegate delete(plant), to: @adapter
 
-  @spec delete(map()) :: {:ok, Plant.t()} | {:error, Changeset.t()}
-  def delete(%Plant{} = plant) do
-    Repo.delete(plant)
-  end
+  @callback change(Plant.t(), map()) :: Changeset.t()
+  defdelegate change(plant, attrs \\ %{}), to: @adapter
 
-  @spec change(Plant.t(), map()) :: Changeset.t()
-  def change(%Plant{} = plant, attrs \\ %{}) do
-    Plant.changeset(plant, attrs)
-  end
+  @callback identifier(Plant.t()) :: atom()
+  defdelegate identifier(plant), to: @adapter
 end

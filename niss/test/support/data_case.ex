@@ -16,7 +16,7 @@ defmodule Niss.DataCase do
 
   use ExUnit.CaseTemplate
 
-  using do
+  using(opts) do
     quote do
       alias Niss.Repo
 
@@ -24,6 +24,8 @@ defmodule Niss.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Niss.DataCase
+
+      unquote(Niss.Case.maybe_setup_mock(opts))
     end
   end
 

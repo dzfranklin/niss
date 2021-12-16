@@ -35,6 +35,9 @@ defmodule Niss.MixProject do
   defp deps do
     [
       {:fly_postgres, "~> 0.1.7"},
+      {:mox,"~> 0.5.0"},
+      {:export_private, ">= 0.0.0"},
+      {:timex, "~> 3.7"},
       {:dialyxir, "~> 1.1", only: [:dev], runtime: false},
       {:libcluster, "~> 3.3"},
       {:phoenix, "~> 1.6.0"},
