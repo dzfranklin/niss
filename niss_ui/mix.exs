@@ -34,6 +34,7 @@ defmodule NissUi.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:dialyxir, "~> 1.1", only: [:dev], runtime: false},
       {:libcluster, "~> 3.3"},
       {:phoenix, "~> 1.6.0"},
       {:phoenix_ecto, "~> 4.4"},
