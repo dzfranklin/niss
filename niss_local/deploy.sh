@@ -5,7 +5,7 @@
 set -euo pipefail
 
 USER="pi"
-HOST="niss-local.local"
+HOST="niss-local._peer.internal"
 
 # Copy over
 rsync -r --exclude=_build --exclude=.elixir_ls --exclude=deps "." "$USER@$HOST:/home/$USER/niss_local"
