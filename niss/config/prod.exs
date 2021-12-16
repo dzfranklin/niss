@@ -3,6 +3,11 @@ import Config
 config :fly_postgres,
   rewrite_db_url: true
 
+config :niss, Niss.Application,
+  cluster: true,
+  executor: true,
+  tank_level_monitor: true
+
 # Do not print debug messages in production
 config :logger, level: :info
 

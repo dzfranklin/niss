@@ -17,7 +17,7 @@ defmodule NissWeb.ChannelCase do
 
   use ExUnit.CaseTemplate
 
-  using do
+  using(opts) do
     quote do
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
@@ -25,6 +25,8 @@ defmodule NissWeb.ChannelCase do
 
       # The default endpoint for testing
       @endpoint NissWeb.Endpoint
+
+      unquote(Niss.Case.maybe_setup_mock(opts))
     end
   end
 

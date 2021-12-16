@@ -1,0 +1,34 @@
+<h1>Plants</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal NissWeb.PlantLive.FormComponent,
+    id: @plant.id || :new,
+    title: @page_title,
+    action: @live_action,
+    plant: @plant,
+    return_to: Routes.plant_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Identifier</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="plants">
+    <%= for plant <- @plants do %>
+      <tr id={"plant-#{plant.id}"}>
+        <td><%= plant.identifier %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.plant_show_path(@socket, :show, plant) %></span>
+          <span><%= live_patch "Edit", to: Routes.plant_index_path(@socket, :edit, plant) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: plant.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Plant", to: Routes.plant_index_path(@socket, :new) %></span>

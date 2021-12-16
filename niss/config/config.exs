@@ -10,6 +10,13 @@ import Config
 config :fly_postgres,
   local_repo: Niss.Repo.Local
 
+config :niss, :adapters,
+  now: Niss.Now.Impl,
+  local: Niss.Local.Impl,
+  plants: Niss.Plants.Impl
+
+config :niss, Niss.Local.Impl, local_node: :"niss_local@niss-local._peer.internal"
+
 config :niss,
   ecto_repos: [Niss.Repo.Local]
 

@@ -22,15 +22,26 @@ defmodule Niss.Application do
       # Start the Endpoint (http/https)
       NissWeb.Endpoint,
       # Start Cluster
-      {Cluster.Supervisor, [topologies, [name: Niss.ClusterSupervisor]]}
-      # Start a worker by calling: Niss.Worker.start_link(arg)
-      # {Niss.Worker, arg}
+      maybe_child(:cluster, {Cluster.Supervisor, [topologies, [name: Niss.ClusterSupervisor]]}),
+      maybe_child(:executor, {Niss.Executor, name: Niss.Executor}),
+      maybe_child(:tank_level_monitor, {Niss.TankLevelMonitor, name: Niss.TankLevelMonitor})
     ]
+    |> Enum.filter(&(!is_nil(&1)))
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Niss.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp maybe_child(name, child) do
+    enabled? =
+      Application.get_env(:niss, __MODULE__)
+      |> Keyword.get(name, false)
+
+    if enabled? do
+      child
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration

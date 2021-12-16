@@ -1,5 +1,12 @@
 import Config
 
+config :niss, Niss.Application,
+  cluster: false,
+  executor: true,
+  tank_level_monitor: true
+
+config :niss, :adapters, local: Niss.Local.NoopImpl
+
 # Configure your database
 config :niss, Niss.Repo.Local,
   username: "postgres",

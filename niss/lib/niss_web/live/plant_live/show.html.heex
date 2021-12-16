@@ -1,0 +1,52 @@
+<h1>Show Plant</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal NissWeb.PlantLive.FormComponent,
+    id: @plant.id,
+    title: @page_title,
+    action: @live_action,
+    plant: @plant,
+    return_to: Routes.plant_show_path(@socket, :show, @plant) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Identifier:</strong>
+    <%= @plant.identifier %>
+  </li>
+
+  <li>
+    <strong>Timezone:</strong>
+    <%= @plant.timezone %>
+  </li>
+
+  <li>
+    <strong>Watering interval days:</strong>
+    <%= @plant.watering_interval_days %>
+  </li>
+
+  <li>
+    <strong>Watering duration secs:</strong>
+    <%= @plant.watering_duration_secs %>
+  </li>
+
+  <li>
+    <strong>Watering time:</strong>
+    <%= @plant.watering_time %>
+  </li>
+
+  <li>
+    <strong>Lights on:</strong>
+    <%= @plant.lights_on %>
+  </li>
+
+  <li>
+    <strong>Lights duration:</strong>
+    <%= @plant.lights_duration %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.plant_show_path(@socket, :edit, @plant), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.plant_index_path(@socket, :index) %></span>
