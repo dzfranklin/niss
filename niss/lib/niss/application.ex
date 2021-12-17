@@ -10,8 +10,11 @@ defmodule Niss.Application do
     topologies = Application.get_env(:libcluster, :topologies) || []
 
     children = [
-      # Start the Ecto repository
-      Niss.Repo,
+      # Used by Fly.Postgres
+      {Fly.RPC, []},
+      Niss.Repo.Local,
+      # Start the tracker after your DB.
+      {Fly.Postgres.LSN.Tracker, []},
       # Start the Telemetry supervisor
       NissWeb.Telemetry,
       # Start the PubSub system

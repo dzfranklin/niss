@@ -7,8 +7,10 @@
 # General application configuration
 import Config
 
+config :fly_postgres, :local_repo, Niss.Repo.Local
+
 config :niss,
-  ecto_repos: [Niss.Repo]
+  ecto_repos: [Niss.Repo.Local]
 
 # Configures the endpoint
 config :niss, NissWeb.Endpoint,

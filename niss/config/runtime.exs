@@ -1,5 +1,11 @@
 import Config
 
+if config_env() != :prod do
+  # Fake these so Fly.Postgres doesn't complain
+  System.put_env("PRIMARY_REGION", "xyz")
+  System.put_env("FLY_REGION", "xyz")
+end
+
 auth_pass = System.get_env("NISS_AUTH_PASS")
 
 auth_pass =
@@ -27,7 +33,7 @@ if config_env() == :prod do
   database_url =
     System.get_env("UI_CONN_URL") || raise "environment variable UI_CONN_URL is missing."
 
-  config :niss, Niss.Repo,
+  config :niss, Niss.Repo.Local,
     socket_options: [:inet6],
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
