@@ -1,5 +1,6 @@
 defmodule NissWeb.Router do
   use NissWeb, :router
+  import NissWeb.DeadAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -14,10 +15,20 @@ defmodule NissWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # Unauthenticated routes
   scope "/", NissWeb do
     pipe_through :browser
 
+    get "/auth", AuthController, :index
+    post "/auth", AuthController, :do_auth
+  end
+
+  # Authenticated routes
+  scope "/", NissWeb do
+    pipe_through [:browser, :dead_auth]
+
     get "/", PageController, :index
+    post "/auth/logout", AuthController, :do_logout
   end
 
   # Other scopes may use custom stacks.

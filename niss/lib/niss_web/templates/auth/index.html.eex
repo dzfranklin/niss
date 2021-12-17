@@ -1,0 +1,11 @@
+<%= if @authed? do %>
+    <%= form_for @conn, Routes.auth_path(@conn, :do_logout), [as: :form], fn _f-> %>
+        <%= submit "Logout" %>
+    <% end %>
+<% else %>
+    <%= form_for @conn, Routes.auth_path(@conn, :do_auth), [as: :form], fn f -> %>
+        <%= label f, :pass, "Password" %>
+        <%= password_input f, :pass %>
+        <%= submit "Login" %>
+    <% end %>
+<% end %>

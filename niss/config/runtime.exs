@@ -1,5 +1,20 @@
 import Config
 
+auth_pass = System.get_env("NISS_AUTH_PASS")
+
+auth_pass =
+  if is_nil(auth_pass) do
+    if config_env() == :prod do
+      raise "Missing env var NISS_AUTH_PASS"
+    else
+      "dummy_pass"
+    end
+  else
+    auth_pass
+  end
+
+config :niss, Niss.Auth, pass: auth_pass
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
