@@ -15,6 +15,11 @@ defmodule NissWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :twilio_webhook do
+    plug :accepts, ["xml"]
+    plug TwilioSignaturePlug, error_handler: NissWeb.TwilioHookSignatureError
+  end
+
   # Unauthenticated routes
   scope "/", NissWeb do
     pipe_through :browser
@@ -29,6 +34,11 @@ defmodule NissWeb.Router do
 
     get "/", PageController, :index
     post "/auth/logout", AuthController, :do_logout
+  end
+
+  scope "/twilio-hook" do
+    pipe_through [:twilio_webhook]
+    get "/message-in", TwilioHookController, :message_in
   end
 
   # Other scopes may use custom stacks.

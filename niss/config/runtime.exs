@@ -75,6 +75,11 @@ if config_env() == :prod do
       ]
     ]
 
+  twilio_token = System.fetch_env!("TWILIO_TOKEN")
+
+  config :twilio_signature_plug,
+    auth_token: twilio_token
+
   # ## Configuring the mailer
   #
   # In production you need to configure the mailer to use a different adapter.
