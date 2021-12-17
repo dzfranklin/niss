@@ -34,6 +34,7 @@ defmodule Niss.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:fly_postgres, "~> 0.1.7"},
       {:dialyxir, "~> 1.1", only: [:dev], runtime: false},
       {:libcluster, "~> 3.3"},
       {:phoenix, "~> 1.6.0"},

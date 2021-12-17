@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :niss, Niss.Repo,
+config :niss, Niss.Repo.Local,
   username: "postgres",
   password: "postgres",
   database: "niss_dev",
