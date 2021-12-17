@@ -36,7 +36,7 @@ defmodule NissWeb.Router do
     post "/auth/logout", AuthController, :do_logout
   end
 
-  scope "/twilio-hook" do
+  scope "/twilio-hook", NissWeb do
     pipe_through [:twilio_webhook]
     get "/message-in", TwilioHookController, :message_in
   end
