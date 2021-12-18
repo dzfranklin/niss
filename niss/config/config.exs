@@ -7,7 +7,9 @@
 # General application configuration
 import Config
 
-config :fly_postgres, :local_repo, Niss.Repo.Local
+config :fly_postgres,
+  rewrite_db_url: true,
+  local_repo: Niss.Repo.Local
 
 config :niss,
   ecto_repos: [Niss.Repo.Local]

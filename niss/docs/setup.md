@@ -6,6 +6,9 @@
 darp> fly pg create
 ```
 
+Follow <https://fly.io/docs/getting-started/multi-region-databases/>. Also
+do the create db steps for the replica.
+
 ## Set secrets
 
 Read each line in `niss ui secrets` 1password note and set like so.
