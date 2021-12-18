@@ -3,7 +3,9 @@ defmodule Niss.Phone do
   The Phone context.
   """
   import Ecto.Query, warn: false
+  alias Ecto.Changeset
   alias Phoenix.PubSub
+  require Logger
   alias Niss.Repo
   alias Niss.Phone.Text
   alias Niss.PubSub
@@ -33,12 +35,25 @@ defmodule Niss.Phone do
   Creates a text.
   """
   def create_text(attrs \\ %{}) do
-    Text.changeset(attrs)
-    |> Repo.insert()
-    |> case do
+    change = Text.changeset(attrs)
+
+    case Changeset.apply_action(change, :insert) do
       {:ok, text} ->
+        # The changeset appears valid, first optimistically broadcast and then check with the db
         PubSub.broadcast("phone_text:#{text.to_number}", {:new, text})
-        {:ok, text}
+
+        case Repo.insert(change) do
+          {:ok, text} ->
+            {:ok, text}
+
+          {:error, change} ->
+            # At some point we might want to broadcast a deletion
+            Logger.error(
+              "Optimistically broadcast invalid text\n#{inspect(change, pretty: true)}"
+            )
+
+            {:error, change}
+        end
 
       {:error, change} ->
         {:error, change}
