@@ -1,5 +1,8 @@
 import Config
 
+config :fly_postgres,
+  rewrite_db_url: true
+
 # Do not print debug messages in production
 config :logger, level: :info
 

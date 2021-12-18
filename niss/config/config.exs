@@ -8,7 +8,6 @@
 import Config
 
 config :fly_postgres,
-  rewrite_db_url: true,
   local_repo: Niss.Repo.Local
 
 config :niss,
