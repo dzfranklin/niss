@@ -1,4 +1,7 @@
 name: Fly Deploy
+concurrency:
+  group: fly-deploy
+  cancel-in-progress: true
 on:
   push:
     branches: [main]
