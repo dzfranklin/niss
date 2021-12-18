@@ -30,13 +30,11 @@ config :niss, Niss.Auth, pass: auth_pass
 if config_env() == :prod do
   app_name = System.get_env("FLY_APP_NAME") || raise "FLY_APP_NAME not available"
 
-  database_url =
-    System.get_env("UI_CONN_URL") || raise "environment variable UI_CONN_URL is missing."
-
   config :niss, Niss.Repo.Local,
     socket_options: [:inet6],
-    url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    show_sensitive_data_on_connection_error: true,
+    ssl: false
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
