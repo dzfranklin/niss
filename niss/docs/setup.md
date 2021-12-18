@@ -1,14 +1,5 @@
 # Setting up
 
-## Create db cluster
-
-```bash
-darp> fly pg create
-```
-
-Follow <https://fly.io/docs/getting-started/multi-region-databases/>. Also
-do the create db steps for the replica.
-
 ## Set secrets
 
 Read each line in `niss ui secrets` 1password note and set like so.
@@ -24,37 +15,56 @@ darp> fly ssh establish
 darp> fly ssh issue --agent
 ```
 
-## Create db
+## Setup db
 
-Doing this manually as `fly pg attach` was/is broken. See <https://community.fly.io/t/reattach-the-database/3261/12>
-
-Connect via `fly ssh console` to niss. Get the connection url from the output
-of `fly pg create` run previously and stored in 1password.
+Based on <https://fly.io/docs/getting-started/multi-region-databases/>.
 
 ```bash
-niss> psql <CONN_URL>
-psql> CREATE DATABASE niss;
-psql> CREATE USER niss WITH LOGIN PASSWORD '<password>';
-psql> GRANT ALL PRIVILEGES ON DATABASE niss TO niss;
+darp> fly pg create
 ```
 
-Create the ui db connection url using the template
+Provide the name `niss-db`, set the region `dfw` (we want the primary to be close to niss-local),
+and select a custom size and enter the least powerful specs possibly for a production setup with 2GB
+of storage. (We need to select production to get a replication-capable setup).
 
-```text
-postgres://niss:<password>@niss-db.internal:5432/niss
-```
-
-Test the connection string via
+Save the config
 
 ```bash
-niss> psql <UI_CONN_URL>
+darp> mkdir -p niss/db
+darp> cd niss/db
+darp> fly config save --app niss-db
 ```
 
-Store the connection url in `niss ui secrets` 1password note and with
+Edit fly.toml to add the section
+
+```toml
+[build]
+  image = "flyio/postgres:14"
+```
+
+(You can check that version 14 is appropriate with `fly image show -a niss-db`)
+
+Create volumes in every region we want a replica, eg:
 
 ```bash
-darp> fly secrets set UI_CONN_URL=<UI_CONN_URL>
+darp niss/db> fly volumes create pg_data --size 2 --region cdg
 ```
+
+Scale so that we have one server in each region (by default we'll have a primary and a replica in
+the primary region, which we don't need for redundancy if there are other regions with replicas).
+
+```bash
+darp niss/db> fly scale count 2 # Assumes one primary and one replica region
+```
+
+Attach
+
+```bash
+darp niss/db> fly pg attach
+```
+
+Test we can connect to primaries and replicas. SSH into the primary and a replica and check that
+`Fly.Postgres.database_url()` contains the region in the url. Try a read and a write in each.
 
 ## Setup domain
 
