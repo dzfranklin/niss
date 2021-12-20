@@ -8,14 +8,19 @@ defmodule NissLocal.Water do
     GPIO.write(pin, 0)
   end
 
-  def level!(name) do
+  def levels!(name) do
     level_pins(name)
     |> Enum.map(fn {height, pin} -> {height, read_level_pin(pin)} end)
   end
 
   defp read_level_pin(num) do
     {:ok, pin} = GPIO.open(num, :input, pull_mode: :pulldown)
+
     GPIO.read(pin)
+    |> case do
+      0 -> false
+      1 -> true
+    end
   end
 
   defp pump_pin(:chillies), do: 4
