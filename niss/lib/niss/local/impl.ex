@@ -17,7 +17,10 @@ defmodule Niss.Local.Impl do
   def pump_for!(name, secs), do: rpc!(Water, :pump_for!, [name, secs])
 
   defp rpc!(mod, fun, args) do
-    node = Application.get_env(:niss, Niss.Local)[:local_node]
+    node =
+      Application.get_env(:niss, Niss.Local.Impl)
+      |> Keyword.fetch!(:local_node)
+
     mod = Module.concat(NissLocal, mod)
     :erpc.call(node, mod, fun, args)
   end
