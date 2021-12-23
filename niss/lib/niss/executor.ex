@@ -19,7 +19,7 @@ defmodule Niss.Executor do
   @callback scheduled(serv(), timeout()) :: %{
               Plant.t() => %{lighting: LightingRecord.t(), watering: WateringRecord.t()}
             }
-  defdelegate scheduled(serv \\ __MODULE__, timeout \\ @timeout), to: @adapter
+  defdelegate scheduled(serv \\ {:global, __MODULE__}, timeout \\ @timeout), to: @adapter
 
   @doc """
   Loads and schedules a fresh list of plants from the database.
@@ -27,18 +27,18 @@ defmodule Niss.Executor do
   Removes any plants not in the fresh load.
   """
   @callback load(serv(), timeout()) :: nil
-  defdelegate load(serv \\ __MODULE__, timeout \\ @timeout), to: @adapter
+  defdelegate load(serv \\ {:global, __MODULE__}, timeout \\ @timeout), to: @adapter
 
   @doc """
   Schedule the plant. If it was already scheduled clears existing info.
   """
   @callback load_plant(serv(), Plant.t(), timeout()) :: nil
-  defdelegate load_plant(serv \\ __MODULE__, plant, timeout \\ @timeout), to: @adapter
+  defdelegate load_plant(serv \\ {:global, __MODULE__}, plant, timeout \\ @timeout), to: @adapter
 
   @doc """
   Clears info for a plant, if it was scheduled.
   """
   @callback maybe_cancel_plant(serv(), Plant.t(), timeout()) :: nil
-  defdelegate maybe_cancel_plant(serv \\ __MODULE__, plant, timeout \\ @timeout),
+  defdelegate maybe_cancel_plant(serv \\ {:global, __MODULE__}, plant, timeout \\ @timeout),
     to: @adapter
 end

@@ -14,18 +14,18 @@ defmodule Niss.Executor.Impl do
   end
 
   @impl true
-  def scheduled(serv \\ __MODULE__, timeout),
+  def scheduled(serv \\ {:global, __MODULE__}, timeout),
     do: GenServer.call(serv, :scheduled, timeout)
 
   @impl true
-  def load(serv \\ __MODULE__, timeout), do: GenServer.call(serv, :load, timeout)
+  def load(serv \\ {:global, __MODULE__}, timeout), do: GenServer.call(serv, :load, timeout)
 
   @impl true
-  def load_plant(serv \\ __MODULE__, %Plant{} = plant, timeout),
+  def load_plant(serv \\ {:global, __MODULE__}, %Plant{} = plant, timeout),
     do: GenServer.call(serv, {:load_plant, plant}, timeout)
 
   @impl true
-  def maybe_cancel_plant(serv \\ __MODULE__, %Plant{} = plant, timeout),
+  def maybe_cancel_plant(serv \\ {:global, __MODULE__}, %Plant{} = plant, timeout),
     do: GenServer.call(serv, {:maybe_cancel_plant, plant}, timeout)
 
   # Internal

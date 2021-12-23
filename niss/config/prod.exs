@@ -5,8 +5,8 @@ config :fly_postgres,
 
 config :niss, Niss.Application,
   cluster: true,
-  executor: true,
-  tank_level_monitor: true
+  executor: :primary,
+  tank_level_monitor: :primary
 
 # Do not print debug messages in production
 config :logger, level: :info
