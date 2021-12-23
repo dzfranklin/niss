@@ -1,8 +1,11 @@
-defmodule Niss.SchedularTest do
+defmodule Niss.ExecutorImplTest do
   use Niss.Case, async: false, mock: true
   alias Timex.Duration
-  alias Niss.{Now, Executor}
+  alias Niss.Now
+  alias Niss.Executor.Impl
   import Niss.PlantsFixtures
+
+  @timeout 100
 
   setup do
     stub(Niss.Now.MockImpl, :utc_now, fn -> ~U[2021-12-16 14:42:42.000000Z] end)
@@ -19,93 +22,103 @@ defmodule Niss.SchedularTest do
     |> expect(:scheduled_watering, fn ^plant -> watering end)
     |> expect(:scheduled_lighting, fn ^plant -> lighting end)
 
-    {:ok, serv} = Executor.start_link()
+    {:ok, serv} = Impl.start_link()
 
     assert %{
              ^plant => %{
                lighting: ^lighting,
                watering: ^watering
              }
-           } = Executor.scheduled(serv)
+           } = Impl.scheduled(serv, @timeout)
   end
 
-  test "load/1" do
-    plant_1 = plant_fixture()
-    watering_1 = watering_record_fixture(plant_1)
-    lighting_1 = lighting_record_fixture(plant_1)
+  describe "load/1" do
+    test "loads fresh" do
+      plant_1 = plant_fixture()
+      watering_1 = watering_record_fixture(plant_1)
+      lighting_1 = lighting_record_fixture(plant_1)
 
-    plant_2 = plant_fixture()
-    watering_2 = watering_record_fixture(plant_2)
-    lighting_2 = lighting_record_fixture(plant_2)
+      plant_2 = plant_fixture()
+      watering_2 = watering_record_fixture(plant_2)
+      lighting_2 = lighting_record_fixture(plant_2)
 
-    Niss.Plants.MockImpl
-    # First load
-    |> expect(:list, fn -> [plant_1] end)
-    |> expect(:scheduled_watering, fn ^plant_1 -> watering_1 end)
-    |> expect(:scheduled_lighting, fn ^plant_1 -> lighting_1 end)
-    # After reload
-    |> expect(:list, fn -> [plant_2] end)
-    |> expect(:scheduled_watering, fn ^plant_2 -> watering_2 end)
-    |> expect(:scheduled_lighting, fn ^plant_2 -> lighting_2 end)
+      Niss.Plants.MockImpl
+      # First load
+      |> expect(:list, fn -> [plant_1] end)
+      |> expect(:scheduled_watering, fn ^plant_1 -> watering_1 end)
+      |> expect(:scheduled_lighting, fn ^plant_1 -> lighting_1 end)
+      # After reload
+      |> expect(:list, fn -> [plant_2] end)
+      |> expect(:scheduled_watering, fn ^plant_2 -> watering_2 end)
+      |> expect(:scheduled_lighting, fn ^plant_2 -> lighting_2 end)
 
-    {:ok, serv} = Executor.start_link()
+      {:ok, serv} = Impl.start_link()
 
-    assert %{
-             ^plant_1 => %{
-               lighting: ^lighting_1,
-               watering: ^watering_1
+      assert %{
+               ^plant_1 => %{
+                 lighting: ^lighting_1,
+                 watering: ^watering_1
+               }
+             } = Impl.scheduled(serv, @timeout)
+
+      Impl.load(serv, @timeout)
+
+      assert %{
+               ^plant_2 => %{
+                 lighting: ^lighting_2,
+                 watering: ^watering_2
+               }
+             } = Impl.scheduled(serv, @timeout)
+    end
+
+    test "cancels existing"
+  end
+
+  describe "load_plant/2" do
+    test "loads fresh" do
+      plant = plant_fixture(%{watering_duration_secs: 1})
+
+      # Even if we change a prop it's still the same plant
+      updated_plant = Map.put(plant, :watering_duration_secs, 2)
+
+      watering = watering_record_fixture(plant)
+      lighting_1 = lighting_record_fixture(plant)
+      lighting_2 = lighting_record_fixture(plant)
+
+      Niss.Plants.MockImpl
+      # First load
+      |> expect(:list, fn -> [plant] end)
+      |> expect(:scheduled_watering, fn ^plant -> watering end)
+      |> expect(:scheduled_lighting, fn ^plant -> lighting_1 end)
+      # After reload
+      |> expect(:scheduled_watering, fn ^updated_plant -> watering end)
+      |> expect(:scheduled_lighting, fn ^updated_plant -> lighting_2 end)
+
+      {:ok, serv} = Impl.start_link()
+
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 1
+
+      assert scheduled[plant] == %{
+               watering: watering,
+               lighting: lighting_1
              }
-           } = Executor.scheduled(serv)
 
-    Executor.load(serv)
+      Impl.load_plant(serv, updated_plant, @timeout)
 
-    assert %{
-             ^plant_2 => %{
-               lighting: ^lighting_2,
-               watering: ^watering_2
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 1
+
+      assert scheduled[updated_plant] == %{
+               watering: watering,
+               lighting: lighting_2
              }
-           } = Executor.scheduled(serv)
+    end
+
+    test "cancels existing"
   end
 
-  test "load_plant/2" do
-    plant = plant_fixture(%{watering_duration_secs: 1})
-
-    # Even if we change a prop it's still the same plant
-    updated_plant = Map.put(plant, :watering_duration_secs, 2)
-
-    watering = watering_record_fixture(plant)
-    lighting_1 = lighting_record_fixture(plant)
-    lighting_2 = lighting_record_fixture(plant)
-
-    Niss.Plants.MockImpl
-    # First load
-    |> expect(:list, fn -> [plant] end)
-    |> expect(:scheduled_watering, fn ^plant -> watering end)
-    |> expect(:scheduled_lighting, fn ^plant -> lighting_1 end)
-    # After reload
-    |> expect(:scheduled_watering, fn ^updated_plant -> watering end)
-    |> expect(:scheduled_lighting, fn ^updated_plant -> lighting_2 end)
-
-    {:ok, serv} = Executor.start_link()
-
-    scheduled = Executor.scheduled(serv)
-    assert map_size(scheduled) == 1
-
-    assert scheduled[plant] == %{
-             watering: watering,
-             lighting: lighting_1
-           }
-
-    Executor.load_plant(serv, updated_plant)
-
-    scheduled = Executor.scheduled(serv)
-    assert map_size(scheduled) == 1
-
-    assert scheduled[updated_plant] == %{
-             watering: watering,
-             lighting: lighting_2
-           }
-  end
+  test "maybe_cancel_plant"
 
   describe "executes" do
     @near_future_millis 100
@@ -135,7 +148,7 @@ defmodule Niss.SchedularTest do
       |> expect(:scheduled_lighting, fn ^plant -> lighting end)
       |> expect(:execute!, fn record -> send(tester, {:executing, record}) end)
 
-      {:ok, _serv} = Executor.start_link()
+      {:ok, _serv} = Impl.start_link()
 
       assert_receive {:executing, ^lighting}, @receive_future_timeout
     end
@@ -152,7 +165,7 @@ defmodule Niss.SchedularTest do
       |> expect(:scheduled_lighting, fn ^plant -> lighting end)
       |> expect(:execute!, fn record -> send(tester, {:executing, record}) end)
 
-      {:ok, _serv} = Executor.start_link()
+      {:ok, _serv} = Impl.start_link()
 
       assert_receive {:executing, ^lighting}, @receive_immediate_timeout
     end
@@ -169,7 +182,7 @@ defmodule Niss.SchedularTest do
       |> expect(:scheduled_lighting, fn ^plant -> lighting end)
       |> expect(:execute!, fn record -> send(tester, {:executing, record}) end)
 
-      {:ok, _serv} = Executor.start_link()
+      {:ok, _serv} = Impl.start_link()
 
       assert_receive {:executing, ^watering}, @receive_future_timeout
     end
@@ -186,7 +199,7 @@ defmodule Niss.SchedularTest do
       |> expect(:scheduled_lighting, fn ^plant -> lighting end)
       |> expect(:execute!, fn record -> send(tester, {:executing, record}) end)
 
-      {:ok, _serv} = Executor.start_link()
+      {:ok, _serv} = Impl.start_link()
 
       assert_receive {:executing, ^watering}, @receive_immediate_timeout
     end

@@ -5,7 +5,7 @@ defmodule Niss.Plants.Impl do
   require Logger
   alias Timex.{Duration, Timezone}
   alias Ecto.Changeset
-  alias Niss.{Now, Repo, Local}
+  alias Niss.{Now, Repo, Local, Executor}
   alias Niss.Plants.{Plant, WateringRecord, LightingRecord, TankLevelRecord}
 
   @impl true
@@ -190,21 +190,35 @@ defmodule Niss.Plants.Impl do
 
   @impl true
   def create(attrs) do
-    # TODO: Send to genserver
     Plant.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, plant} ->
+        Executor.load_plant(plant)
+        {:ok, plant}
+
+      {:error, plant} ->
+        {:error, plant}
+    end
   end
 
   @impl true
   def update(plant, attrs) do
-    # TODO: Send to genserver
     Plant.changeset(plant, attrs)
     |> Repo.update()
+    |> case do
+      {:ok, plant} ->
+        Executor.load_plant(plant)
+        {:ok, plant}
+
+      {:error, plant} ->
+        {:error, plant}
+    end
   end
 
   @impl true
   def delete(plant) do
-    # TODO: Send to genserver
+    Executor.maybe_cancel_plant(plant)
     Repo.delete(plant)
   end
 

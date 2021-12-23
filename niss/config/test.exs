@@ -8,7 +8,8 @@ config :niss, Niss.Application,
 config :niss, :adapters,
   now: Niss.Now.MockImpl,
   local: Niss.Local.MockImpl,
-  plants: Niss.Plants.MockImpl
+  plants: Niss.Plants.MockImpl,
+  executor: Niss.Executor.MockImpl
 
 # Configure your database
 #

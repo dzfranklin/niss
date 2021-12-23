@@ -3,7 +3,7 @@ defmodule Niss.PlantsImplTest do
   import ExUnit.CaptureLog
   alias Timex.Duration
   import Niss.PlantsFixtures
-  alias Niss.{Now, Repo}
+  alias Niss.{Now, Repo, Executor}
   alias Niss.Plants.Impl
   alias Niss.Plants.{Plant, LightingRecord, WateringRecord, TankLevelRecord}
 
@@ -437,6 +437,8 @@ defmodule Niss.PlantsImplTest do
   end
 
   test "create/1 with valid data creates a plant" do
+    expect(Executor.MockImpl, :load_plant, fn _serv, _plant, _timeout -> nil end)
+
     assert {:ok, %Plant{} = plant} = Impl.create(@valid_attrs)
     assert plant.identifier == "some identifier"
     assert plant.timezone == "Africa/Lagos"
@@ -468,6 +470,8 @@ defmodule Niss.PlantsImplTest do
       watering_time: ~T[15:01:01]
     }
 
+    expect(Executor.MockImpl, :load_plant, fn _serv, _plant, _timeout -> nil end)
+
     assert {:ok, %Plant{} = plant} = Impl.update(plant, update_attrs)
     assert plant.identifier == "some updated identifier"
     assert plant.lights_on == ~T[15:01:01]
@@ -485,6 +489,9 @@ defmodule Niss.PlantsImplTest do
 
   test "delete/1 deletes the plant" do
     plant = inserted_plant_fixture()
+
+    expect(Executor.MockImpl, :maybe_cancel_plant, fn _serv, ^plant, _timeout -> nil end)
+
     assert {:ok, %Plant{}} = Impl.delete(plant)
     assert_raise Ecto.NoResultsError, fn -> Impl.get!(plant.id) end
   end
@@ -495,23 +502,21 @@ defmodule Niss.PlantsImplTest do
   end
 
   def inserted_plant_fixture(attrs \\ %{}) do
-    {:ok, plant} =
-      attrs
-      |> Enum.into(%{
-        identifier: unique_plant_identifier(),
-        # Chosen b/c UTC+1 year round
-        timezone: "Africa/Lagos",
-        lights_on: ~T[14:00:00],
-        lights_duration: ~T[23:59:59],
-        watering_duration_secs: 42,
-        watering_interval_days: 42,
-        watering_time: ~T[14:00:00],
-        tank_base_area: 1,
-        tank_max_depth: 10
-      })
-      |> Impl.create()
-
-    plant
+    attrs
+    |> Enum.into(%{
+      identifier: unique_plant_identifier(),
+      # Chosen b/c UTC+1 year round
+      timezone: "Africa/Lagos",
+      lights_on: ~T[14:00:00],
+      lights_duration: ~T[23:59:59],
+      watering_duration_secs: 42,
+      watering_interval_days: 42,
+      watering_time: ~T[14:00:00],
+      tank_base_area: 1,
+      tank_max_depth: 10
+    })
+    |> Plant.changeset()
+    |> Repo.insert!()
   end
 
   def inserted_watering_record_fixture(plant, attrs \\ %{}) do

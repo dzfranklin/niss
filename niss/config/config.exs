@@ -13,7 +13,8 @@ config :fly_postgres,
 config :niss, :adapters,
   now: Niss.Now.Impl,
   local: Niss.Local.Impl,
-  plants: Niss.Plants.Impl
+  plants: Niss.Plants.Impl,
+  executor: Niss.Executor.Impl
 
 config :niss, Niss.Local.Impl, local_node: :"niss_local@niss-local._peer.internal"
 
