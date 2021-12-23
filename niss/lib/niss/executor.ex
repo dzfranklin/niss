@@ -122,7 +122,7 @@ defmodule Niss.Executor do
     timer = _schedule_msg_at(record.at, {:execute, record})
 
     Logger.info(
-      "scheduler: scheduled watering for #{plant.id}/#{plant.identifier} at #{record.at}"
+      "executor: scheduled watering for #{plant.id}/#{plant.identifier} at #{record.at}"
     )
 
     Map.update(scheduled, plant.id, %{}, fn prev ->
@@ -142,7 +142,7 @@ defmodule Niss.Executor do
     timer = _schedule_msg_at(record.at, {:execute, record})
 
     Logger.info(
-      "scheduler: scheduled lighting for #{plant.id}/#{plant.identifier} at #{record.at} to #{record.on?}"
+      "executor: scheduled lighting for #{plant.id}/#{plant.identifier} at #{record.at} to #{record.on?}"
     )
 
     Map.update(scheduled, plant.id, %{}, fn prev ->
