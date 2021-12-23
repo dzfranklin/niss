@@ -52,7 +52,7 @@ defmodule Niss.Executor.Impl do
 
   @impl true
   def handle_call({:maybe_cancel_plant, plant}, _from, state) do
-    {:reply, nil, _maybe_cancel_plant(state, plant)}
+    {:reply, nil, _maybe_unload_plant(state, plant)}
   end
 
   @impl true
@@ -83,26 +83,25 @@ defmodule Niss.Executor.Impl do
   end
 
   defp _load(state) do
-    _cancel_all(state.plants, state.scheduled)
-
     plants = Plants.list()
-    %{state | plants: Map.new(plants, &{&1.id, &1}), scheduled: _schedule_all(plants)}
+
+    state
+    |> _unload_all()
+    |> Map.put(:plants, Map.new(plants, &{&1.id, &1}))
+    |> Map.put(:scheduled, _schedule_all(plants))
   end
 
   defp _load_plant(state, plant) do
-    _maybe_cancel_plant(plant, state.scheduled)
-
     state
+    |> _maybe_unload_plant(plant)
     |> Map.update!(:plants, fn val -> Map.put(val, plant.id, plant) end)
     |> Map.update!(:scheduled, fn val -> _schedule_plant(plant, val) end)
   end
 
-  defp _cancel_all(plants, scheduled) do
-    for {_id, plant} <- plants do
-      _maybe_cancel_plant(plant, scheduled)
-    end
-
-    nil
+  defp _unload_all(state) do
+    Enum.reduce(state.plants, state, fn {_id, plant}, state ->
+      _maybe_unload_plant(state, plant)
+    end)
   end
 
   defp _schedule_all(plants) do
@@ -110,8 +109,6 @@ defmodule Niss.Executor.Impl do
   end
 
   defp _schedule_plant(plant, scheduled) do
-    _maybe_cancel_plant(plant, scheduled)
-
     watering_record = Plants.scheduled_watering(plant)
     watering_timer = _schedule_msg_at(watering_record.at, {:execute, watering_record})
 
@@ -126,10 +123,20 @@ defmodule Niss.Executor.Impl do
     })
   end
 
-  defp _maybe_cancel_plant(plant, scheduled) do
-    records = Map.get(scheduled, plant.id)
+  defp _maybe_unload_plant(state, plant) do
+    state
+    |> Map.update!(:scheduled, &_maybe_unschedule(plant, &1))
+    |> Map.update!(:plants, &Map.delete(&1, plant.id))
+  end
+
+  defp _maybe_unschedule(plant, scheduled) do
+    {records, scheduled} = Map.pop(scheduled, plant.id)
 
     unless is_nil(records) do
+      Logger.info(
+        "_maybe_unschedule: unscheduling #{plant.id}/#{plant.identifier}, was #{inspect(records, pretty: true)}"
+      )
+
       if Map.has_key?(records, :watering) do
         {_record, old_timer} = records.watering
         Process.cancel_timer(old_timer)
@@ -140,6 +147,8 @@ defmodule Niss.Executor.Impl do
         Process.cancel_timer(old_timer)
       end
     end
+
+    scheduled
   end
 
   def _schedule_msg_at(at, msg) do

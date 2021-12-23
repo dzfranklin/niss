@@ -1,8 +1,10 @@
 defmodule Niss.ExecutorImplTest do
+  # TODO: Use start_supervised to async: true
   use Niss.Case, async: false, mock: true
   alias Timex.Duration
   alias Niss.Now
   alias Niss.Executor.Impl
+  alias Niss.Plants.Plant
   import Niss.PlantsFixtures
 
   @timeout 100
@@ -70,8 +72,6 @@ defmodule Niss.ExecutorImplTest do
                }
              } = Impl.scheduled(serv, @timeout)
     end
-
-    test "cancels existing"
   end
 
   describe "load_plant/3" do
@@ -114,11 +114,65 @@ defmodule Niss.ExecutorImplTest do
                lighting: lighting_2
              }
     end
-
-    test "cancels existing"
   end
 
-  test "maybe_cancel_plant"
+  describe "maybe_cancel_plant/3" do
+    test "with scheduled" do
+      plant = plant_fixture(%{watering_duration_secs: 1})
+
+      watering = watering_record_fixture(plant)
+      lighting = lighting_record_fixture(plant)
+
+      Niss.Plants.MockImpl
+      |> expect(:list, fn -> [plant] end)
+      |> expect(:scheduled_watering, fn ^plant -> watering end)
+      |> expect(:scheduled_lighting, fn ^plant -> lighting end)
+
+      {:ok, serv} = Impl.start_link()
+
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 1
+
+      Impl.maybe_cancel_plant(serv, plant, @timeout)
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 0
+    end
+
+    test "even if a prop changes" do
+      plant = plant_fixture(%{watering_duration_secs: 1})
+      updated_plant = %Plant{plant | watering_duration_secs: 42}
+
+      watering = watering_record_fixture(plant)
+      lighting = lighting_record_fixture(plant)
+
+      Niss.Plants.MockImpl
+      |> expect(:list, fn -> [plant] end)
+      |> expect(:scheduled_watering, fn ^plant -> watering end)
+      |> expect(:scheduled_lighting, fn ^plant -> lighting end)
+
+      {:ok, serv} = Impl.start_link()
+
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 1
+
+      Impl.maybe_cancel_plant(serv, updated_plant, @timeout)
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 0
+    end
+
+    test "with unscheduled" do
+      expect(Niss.Plants.MockImpl, :list, fn -> [] end)
+
+      {:ok, serv} = Impl.start_link()
+
+      scheduled = Impl.scheduled(serv, @timeout)
+      assert map_size(scheduled) == 0
+
+      plant = plant_fixture()
+      Impl.maybe_cancel_plant(serv, plant, @timeout)
+      assert map_size(scheduled) == 0
+    end
+  end
 
   describe "executes" do
     @near_future_millis 100

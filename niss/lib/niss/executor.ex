@@ -10,6 +10,9 @@ defmodule Niss.Executor do
   @callback start_link(keyword) :: GenServer.on_start()
   defdelegate start_link(opts \\ []), to: @adapter
 
+  @callback child_spec(keyword) :: map()
+  defdelegate child_spec(opts \\ []), to: @adapter
+
   @doc """
   Get the plants loaded and scheduled.
   """
