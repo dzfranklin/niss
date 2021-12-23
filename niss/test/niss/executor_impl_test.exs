@@ -1,5 +1,4 @@
 defmodule Niss.ExecutorImplTest do
-  # TODO: Use start_supervised to async: true
   use Niss.Case, async: false, mock: true
   alias Timex.Duration
   alias Niss.Now
