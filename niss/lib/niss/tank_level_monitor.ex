@@ -69,8 +69,9 @@ defmodule Niss.TankLevelMonitor do
 
   defp _get_remaining(plant) do
     with {:ok, levels} <- _get_levels(plant),
-         {:ok, highest} <- _calc_highest_level(levels) do
-      {:ok, meters_deep_to_liters(plant, highest)}
+         {:ok, highest_cm} <- _calc_highest_level(levels) do
+      highest_m = highest_cm / 100
+      {:ok, meters_deep_to_liters(plant, highest_m)}
     else
       {:error, error} -> {:error, error}
     end
