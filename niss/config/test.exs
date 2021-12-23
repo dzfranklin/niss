@@ -34,8 +34,8 @@ config :niss, NissWeb.Endpoint,
 # In test we don't send emails.
 config :niss, Niss.Mailer, adapter: Swoosh.Adapters.Test
 
-# Print only warnings and errors during test
-config :logger, level: :warn
+log_level = System.get_env("LOG", "warn") |> String.to_atom()
+config :logger, level: log_level
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
