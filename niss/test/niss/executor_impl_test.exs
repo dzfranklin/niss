@@ -189,6 +189,30 @@ defmodule Niss.ExecutorImplTest do
        }}
     end
 
+    test "executes and then executes again", %{
+      at_near_future: at_near_future,
+      at_far_future: at_far_future
+    } do
+      tester = self()
+      plant = plant_fixture()
+
+      watering = watering_record_fixture(plant, %{at: at_far_future})
+      lighting_on = lighting_record_fixture(plant, %{on?: true, at: at_near_future})
+      lighting_off = lighting_record_fixture(plant, %{on?: false, at: at_near_future})
+
+      Niss.Plants.MockImpl
+      |> expect(:list, fn -> [plant] end)
+      |> expect(:scheduled_watering, fn ^plant -> watering end)
+      |> expect(:scheduled_lighting, fn ^plant -> lighting_on end)
+      |> expect(:scheduled_lighting, fn ^plant -> lighting_off end)
+      |> expect(:execute!, 2, fn record -> send(tester, {:executing, record}) end)
+
+      {:ok, _serv} = Impl.start_link()
+
+      assert_receive {:executing, ^lighting_on}, @receive_future_timeout
+      assert_receive {:executing, ^lighting_off}, @receive_future_timeout
+    end
+
     test "lighting on in future", %{at_near_future: at_near_future, at_far_future: at_far_future} do
       tester = self()
       plant = plant_fixture()

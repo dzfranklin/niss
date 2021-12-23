@@ -76,9 +76,20 @@ defmodule Niss.Executor.Impl do
   end
 
   @impl true
-  def handle_info({:execute, record}, state) do
-    Logger.info("Received msg to execute: #{inspect(record, pretty: true)}")
+  def handle_info({:execute, type, plant_id}, state) do
+    Logger.info("Received msg to execute #{inspect(type)} #{plant_id}")
+
+    plant = Map.fetch!(state.plants, plant_id)
+
+    {record, _timer} =
+      state.scheduled
+      |> Map.fetch!(plant_id)
+      |> Map.fetch!(type)
+
     Plants.execute!(record)
+
+    state = Map.update!(state, :scheduled, &_schedule_plant(&1, plant, type))
+
     {:noreply, state}
   end
 
@@ -95,7 +106,7 @@ defmodule Niss.Executor.Impl do
     state
     |> _maybe_unload_plant(plant)
     |> Map.update!(:plants, fn val -> Map.put(val, plant.id, plant) end)
-    |> Map.update!(:scheduled, fn val -> _schedule_plant(plant, val) end)
+    |> Map.update!(:scheduled, fn scheduled -> _schedule_plant(scheduled, plant) end)
   end
 
   defp _unload_all(state) do
@@ -105,22 +116,27 @@ defmodule Niss.Executor.Impl do
   end
 
   defp _schedule_all(plants) do
-    Enum.reduce(plants, %{}, &_schedule_plant/2)
+    Enum.reduce(plants, %{}, fn plant, scheduled -> _schedule_plant(scheduled, plant) end)
   end
 
-  defp _schedule_plant(plant, scheduled) do
-    watering_record = Plants.scheduled_watering(plant)
-    watering_timer = _schedule_msg_at(watering_record.at, {:execute, watering_record})
+  defp _schedule_plant(scheduled, plant) do
+    Map.put(scheduled, plant.id, %{})
+    |> _schedule_plant(plant, :watering)
+    |> _schedule_plant(plant, :lighting)
+  end
 
-    lighting_record = Plants.scheduled_lighting(plant)
-    lighting_timer = _schedule_msg_at(lighting_record.at, {:execute, lighting_record})
+  defp _schedule_plant(scheduled, plant, :watering) do
+    Logger.info("executor: scheduled watering #{plant.id}/#{plant.identifier}")
+    record = Plants.scheduled_watering(plant)
+    timer = _schedule_msg_at(record.at, {:execute, :watering, plant.id})
+    put_in(scheduled, [plant.id, :watering], {record, timer})
+  end
 
-    Logger.info("executor: scheduled #{plant.id}/#{plant.identifier}")
-
-    Map.put(scheduled, plant.id, %{
-      watering: {watering_record, watering_timer},
-      lighting: {lighting_record, lighting_timer}
-    })
+  defp _schedule_plant(scheduled, plant, :lighting) do
+    Logger.info("executor: scheduled lighting #{plant.id}/#{plant.identifier}")
+    record = Plants.scheduled_lighting(plant)
+    timer = _schedule_msg_at(record.at, {:execute, :lighting, plant.id})
+    put_in(scheduled, [plant.id, :lighting], {record, timer})
   end
 
   defp _maybe_unload_plant(state, plant) do
