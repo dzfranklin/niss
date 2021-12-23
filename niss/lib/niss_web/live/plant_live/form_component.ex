@@ -54,6 +54,7 @@ defmodule NissWeb.PlantLive.FormComponent do
   end
 
   defp lights_off(change) do
+    # TODO: Trigger on if these specific fields are valid
     if change.valid? do
       timezone = Ecto.Changeset.fetch_field!(change, :timezone)
       on = Ecto.Changeset.fetch_field!(change, :lights_on)

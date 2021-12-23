@@ -190,18 +190,21 @@ defmodule Niss.Plants.Impl do
 
   @impl true
   def create(attrs) do
+    # TODO: Send to genserver
     Plant.changeset(attrs)
     |> Repo.insert()
   end
 
   @impl true
   def update(plant, attrs) do
+    # TODO: Send to genserver
     Plant.changeset(plant, attrs)
     |> Repo.update()
   end
 
   @impl true
   def delete(plant) do
+    # TODO: Send to genserver
     Repo.delete(plant)
   end
 

@@ -89,6 +89,7 @@ defmodule Niss.Executor do
   end
 
   defp _load(state) do
+    # TODO: Cancel plants no longer in list
     plants = Plants.list()
     %{state | plants: Map.new(plants, &{&1.id, &1}), scheduled: _schedule_all(plants)}
   end
