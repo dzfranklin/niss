@@ -26,7 +26,18 @@ defmodule NissWeb.ConnCase do
     end
   end
 
-  setup _tags do
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+  setup tags do
+    authed? = Map.get(tags, :authed?, false)
+    {:ok, conn: build_conn(authed?)}
+  end
+
+  def build_conn(authed?) do
+    conn = Phoenix.ConnTest.build_conn()
+
+    if authed? do
+      Phoenix.ConnTest.init_test_session(conn, %{authed?: true})
+    else
+      conn
+    end
   end
 end

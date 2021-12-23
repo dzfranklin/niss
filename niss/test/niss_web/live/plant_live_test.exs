@@ -74,6 +74,7 @@ defmodule NissWeb.PlantLiveTest do
   end
 
   describe "Index" do
+    @describetag :authed?
     setup [:create]
 
     test "lists all plants", %{conn: conn, plant: plant} do
@@ -143,6 +144,7 @@ defmodule NissWeb.PlantLiveTest do
   end
 
   describe "Show" do
+    @describetag :authed?
     setup [:create]
 
     test "displays plant", %{conn: conn, plant: plant} do
