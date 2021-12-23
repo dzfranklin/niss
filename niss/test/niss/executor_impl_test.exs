@@ -12,7 +12,7 @@ defmodule Niss.ExecutorImplTest do
     :ok
   end
 
-  test "scheduled/1" do
+  test "scheduled/2" do
     plant = plant_fixture()
     watering = watering_record_fixture(plant)
     lighting = lighting_record_fixture(plant)
@@ -32,7 +32,7 @@ defmodule Niss.ExecutorImplTest do
            } = Impl.scheduled(serv, @timeout)
   end
 
-  describe "load/1" do
+  describe "load/2" do
     test "loads fresh" do
       plant_1 = plant_fixture()
       watering_1 = watering_record_fixture(plant_1)
@@ -74,7 +74,7 @@ defmodule Niss.ExecutorImplTest do
     test "cancels existing"
   end
 
-  describe "load_plant/2" do
+  describe "load_plant/3" do
     test "loads fresh" do
       plant = plant_fixture(%{watering_duration_secs: 1})
 
