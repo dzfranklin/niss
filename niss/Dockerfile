@@ -57,7 +57,9 @@ COPY lib lib
 RUN mix compile
 
 # Run after compile so that we can purge css based on usage
+RUN cd assets && npm ci
 RUN mix assets.deploy
+RUN mix phx.digest
 
 # Changes to config/runtime.exs don't require recompiling the code
 COPY config/runtime.exs config/
