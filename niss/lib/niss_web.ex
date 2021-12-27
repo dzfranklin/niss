@@ -88,6 +88,8 @@ defmodule NissWeb do
 
       import NissWeb.ErrorHelpers
       alias NissWeb.Router.Helpers, as: Routes
+
+      import NissWeb, only: [has_flash?: 2]
     end
   end
 
@@ -96,5 +98,10 @@ defmodule NissWeb do
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
+  end
+
+  def has_flash?(conn, key) do
+    value = Phoenix.Controller.get_flash(conn, key)
+    !is_nil(value)
   end
 end

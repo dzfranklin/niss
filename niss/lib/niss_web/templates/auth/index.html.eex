@@ -1,11 +1,20 @@
-<%= if @authed? do %>
-    <%= form_for @conn, Routes.auth_path(@conn, :do_logout), [as: :form], fn _f-> %>
-        <%= submit "Logout" %>
+<section class="max-w-md mx-auto">
+    <%= if @authed? do %>
+        <%= form_for @conn, Routes.auth_path(@conn, :do_logout), [as: :form], fn _f-> %>
+            <%= submit "Logout", class: "btn-primary px-4 py-2 text-sm" %>
+        <% end %>
+    <% else %>
+        <%= form_for @conn, Routes.auth_path(@conn, :do_auth), [as: :form], fn f -> %>
+            <div class="mb-6">
+                <%= label f, :pass, "Password", class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                    <%= password_input f, :pass, class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                </div>
+            </div>
+
+            <div class="flex flex-row justify-end">
+                <%= submit "Login", class: "btn-primary px-4 py-2 text-sm" %>
+            </div>
+        <% end %>
     <% end %>
-<% else %>
-    <%= form_for @conn, Routes.auth_path(@conn, :do_auth), [as: :form], fn f -> %>
-        <%= label f, :pass, "Password" %>
-        <%= password_input f, :pass %>
-        <%= submit "Login" %>
-    <% end %>
-<% end %>
+</section>
