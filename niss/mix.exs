@@ -35,7 +35,7 @@ defmodule Niss.MixProject do
   defp deps do
     [
       {:fly_postgres, "~> 0.1.7"},
-      {:mox,"~> 0.5.0"},
+      {:mox, "~> 0.5.0"},
       {:export_private, ">= 0.0.0"},
       {:timex, "~> 3.7"},
       {:dialyxir, "~> 1.1", only: [:dev], runtime: false},
@@ -71,7 +71,11 @@ defmodule Niss.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/local/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.deploy": [
+        "cmd --cd assets npm run deploy",
+        "esbuild default --minify",
+        "phx.digest"
+      ]
     ]
   end
 
