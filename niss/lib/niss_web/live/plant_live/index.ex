@@ -4,6 +4,8 @@ defmodule NissWeb.PlantLive.Index do
   alias Niss.Plants
   alias Niss.Plants.Plant
 
+  on_mount NissWeb.LiveAuth
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket, :plants, list())}

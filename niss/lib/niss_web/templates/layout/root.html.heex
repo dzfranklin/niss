@@ -10,20 +10,6 @@
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
   <body>
-    <header class="flex flex-row justify-between mx-8 mt-4 mb-10">
-      <span class="text-lg">Niss</span>
-
-      <nav>
-        <ul class="flex flex-row justify-end text-lg">
-          <li class="mx-1">
-            <%= link "Home", to: Routes.page_path(@conn, :index), class: "link-novisited" %>
-          </li>
-          <li class="mx-1">
-            <%= link "Auth", to: Routes.auth_path(@conn, :index), class: "link-novisited" %>
-          </li>
-        </ul>
-      </nav>
-    </header>
     <%= @inner_content %>
   </body>
 </html>

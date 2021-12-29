@@ -9,12 +9,23 @@ defmodule Niss.Plants.Impl do
   alias Niss.Plants.{Plant, WateringRecord, LightingRecord, TankLevelRecord}
 
   @impl true
+  def pretty_name(plant) do
+    plant.identifier
+    |> Niss.titlecase()
+  end
+
+  @impl true
   def tank_level(%Plant{id: plant_id}) do
     TankLevelRecord
     |> where([r], r.plant_id == ^plant_id)
     |> order_by(desc: :at)
     |> limit(1)
     |> Repo.one()
+  end
+
+  @impl true
+  def tank_capacity(%Plant{tank_max_depth: depth} = plant) do
+    Niss.TankLevelMonitor.meters_deep_to_liters(plant, depth)
   end
 
   @impl true
@@ -88,29 +99,29 @@ defmodule Niss.Plants.Impl do
     if is_nil(last) do
       at =
         now
-        |> convert_timezone!(plant.timezone)
+        |> Niss.convert_timezone!(plant.timezone)
         |> Timex.beginning_of_day()
         |> Timex.add(Duration.from_time(plant.lights_on))
-        |> convert_timezone!("Etc/UTC")
+        |> Niss.convert_timezone!("Etc/UTC")
 
       %{on?: true, at: at}
     else
       if last.on? do
         at =
           last.at
-          |> convert_timezone!(plant.timezone)
+          |> Niss.convert_timezone!(plant.timezone)
           |> Timex.add(Duration.from_time(plant.lights_duration))
-          |> convert_timezone!("Etc/UTC")
+          |> Niss.convert_timezone!("Etc/UTC")
 
         %{on?: false, at: at}
       else
         at =
           last.at
-          |> convert_timezone!(plant.timezone)
+          |> Niss.convert_timezone!(plant.timezone)
           |> Timex.beginning_of_day()
           |> Timex.add(Duration.from_days(1))
           |> Timex.add(Duration.from_time(plant.lights_on))
-          |> convert_timezone!("Etc/UTC")
+          |> Niss.convert_timezone!("Etc/UTC")
 
         %{on?: true, at: at}
       end
@@ -157,11 +168,11 @@ defmodule Niss.Plants.Impl do
 
     at =
       origin
-      |> convert_timezone!(plant.timezone)
+      |> Niss.convert_timezone!(plant.timezone)
       |> Timex.beginning_of_day()
       |> Timex.add(Duration.from_days(plant.watering_interval_days))
       |> Timex.add(Duration.from_time(plant.watering_time))
-      |> convert_timezone!("Etc/UTC")
+      |> Niss.convert_timezone!("Etc/UTC")
 
     WateringRecord.changeset(%{
       plant_id: plant.id,
@@ -179,6 +190,55 @@ defmodule Niss.Plants.Impl do
   end
 
   defp apply_schedule_action!(change), do: Changeset.apply_action!(change, :schedule)
+
+  @impl true
+  def list_ending_tank_levels(from, to) do
+    Niss.rpc_primary(fn ->
+      from = Timex.to_datetime(from)
+      to = Timex.to_datetime(to)
+
+      tank_level_records =
+        Repo.query!(
+          """
+            SELECT * FROM plants_tank_level_records
+            WHERE at IN (
+              SELECT max(at) FROM plants_tank_level_records
+              WHERE at >= $1 AND at <= $2
+              GROUP BY plant_id, date(at)
+            )
+            ORDER BY at
+          """,
+          [from, to]
+        )
+        |> Repo.load_into(TankLevelRecord)
+        |> Repo.preload(:plant)
+    end)
+  end
+
+  @impl true
+  def list_records(from, to) do
+    Niss.rpc_primary(fn ->
+      from = Timex.to_datetime(from)
+      to = Timex.to_datetime(to)
+
+      watering_records =
+        WateringRecord
+        |> where([r], r.at >= ^from and r.at <= ^to)
+        |> order_by(asc: :at)
+        |> preload(:plant)
+        |> Repo.all()
+
+      lighting_records =
+        LightingRecord
+        |> where([r], r.at >= ^from and r.at <= ^to)
+        |> order_by(asc: :at)
+        |> preload(:plant)
+        |> Repo.all()
+
+      Stream.concat([watering_records, lighting_records])
+      |> Enum.sort_by(& &1.at)
+    end)
+  end
 
   @impl true
   def list do
@@ -231,15 +291,5 @@ defmodule Niss.Plants.Impl do
   def identifier(plant) do
     plant.identifier
     |> String.to_atom()
-  end
-
-  defp convert_timezone!(datetime, tz) do
-    case Timezone.convert(datetime, tz) do
-      {:error, error} ->
-        raise "convert_timezone!(#{inspect(datetime)}, #{inspect(tz)}): #{inspect(error, pretty: true)}"
-
-      datetime ->
-        datetime
-    end
   end
 end

@@ -5,7 +5,7 @@
 
 @layer components {
   .main-container {
-    @apply max-w-6xl mx-auto;
+    @apply max-w-6xl mx-auto p-5;
   }
 
   .link {
@@ -38,27 +38,19 @@
   }
 }
 
-.alert-container {
-  @apply mb-10;
-}
-
 .alert-info {
-  @apply mx-6 my-4 p-4 border-l-4 text-sm;
+  @apply my-4 p-4 border-l-4 text-sm;
   @apply bg-blue-50 border-blue-400 text-blue-700;
 }
 
 .alert-warn {
-  @apply mx-6 my-4 p-4 border-l-4 text-sm;
+  @apply my-4 p-4 border-l-4 text-sm;
   @apply bg-yellow-50 border-yellow-400 text-yellow-700;
 }
 
 .alert-danger {
-  @apply mx-6 my-4 p-4 border-l-4 text-sm;
+  @apply my-4 p-4 border-l-4 text-sm;
   @apply bg-red-50 border-red-400 text-red-700;
-}
-
-.alert:empty {
-  display: none;
 }
 
 .invalid-feedback {

@@ -3,6 +3,8 @@ defmodule NissWeb.PlantLive.Show do
 
   alias Niss.Plants
 
+  on_mount NissWeb.LiveAuth
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}

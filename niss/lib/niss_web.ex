@@ -58,6 +58,14 @@ defmodule NissWeb do
     end
   end
 
+  def component do
+    quote do
+      use Phoenix.Component
+
+      unquote(view_helpers())
+    end
+  end
+
   def router do
     quote do
       use Phoenix.Router
@@ -82,6 +90,7 @@ defmodule NissWeb do
       # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
       import Phoenix.LiveView.Helpers
       import NissWeb.LiveHelpers
+      alias Phoenix.LiveView.JS
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
@@ -89,7 +98,7 @@ defmodule NissWeb do
       import NissWeb.ErrorHelpers
       alias NissWeb.Router.Helpers, as: Routes
 
-      import NissWeb, only: [has_flash?: 2]
+      import NissWeb, only: [has_flash?: 2, classes: 2]
     end
   end
 
@@ -103,5 +112,20 @@ defmodule NissWeb do
   def has_flash?(conn, key) do
     value = Phoenix.Controller.get_flash(conn, key)
     !is_nil(value)
+  end
+
+  def classes(always, conditional) do
+    applicable = Enum.filter(conditional, fn {_cls, pred} -> pred end)
+
+    conditional_part =
+      if Enum.empty?(applicable) do
+        ""
+      else
+        applicable
+        |> Enum.map(fn {cls, _pred} -> cls end)
+        |> Enum.join(" ")
+      end
+
+    always <> " " <> conditional_part
   end
 end

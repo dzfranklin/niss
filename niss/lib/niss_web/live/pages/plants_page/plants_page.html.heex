@@ -1,0 +1,9 @@
+<section class="px-5 lg:mx-20">
+    <%= for plant <- @plants do %>
+        <PlantComponent.summary plant={plant} intl={@intl}/>
+    <% end %>
+
+    <.live_component module={CalendarComponent} id={:calendar}
+        intl={@intl} month={@month_shown}
+    />
+</section>

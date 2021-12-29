@@ -10,5 +10,29 @@ defmodule Niss.Repo.Local do
 end
 
 defmodule Niss.Repo do
-  use Fly.Repo, local_repo: Niss.Repo.Local
+  @local_repo Niss.Repo.Local
+  use Fly.Repo, local_repo: @local_repo
+
+  def query(sql, params \\ [], opts \\ []) do
+    Niss.rpc_primary(fn ->
+      Ecto.Adapters.SQL.query(@local_repo, sql, params, opts)
+    end)
+  end
+
+  def query!(sql, params \\ [], opts \\ []) do
+    Niss.rpc_primary(fn ->
+      Ecto.Adapters.SQL.query!(@local_repo, sql, params, opts)
+    end)
+  end
+
+  def load_into(%Postgrex.Result{columns: cols, rows: rows}, schema) do
+    Enum.map(rows, &@local_repo.load(schema, {cols, &1}))
+  end
+
+  def load_into({:error, error}, _schema), do: {:error, error}
+
+  def load_into({:ok, %Postgrex.Result{columns: cols, rows: rows}}, schema) do
+    values = Enum.map(rows, &@local_repo.load(schema, {cols, &1}))
+    {:ok, values}
+  end
 end

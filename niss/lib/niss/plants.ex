@@ -3,11 +3,20 @@ defmodule Niss.Plants do
 
   @adapter Application.fetch_env!(:niss, :adapters)[:plants]
 
+  @callback pretty_name(Plant.t()) :: String.t()
+  defdelegate pretty_name(plant), to: @adapter
+
   @doc """
   Get the (cached) water volume of the plant's tank. Units are liters.
   """
   @callback tank_level(Plant.t()) :: TankLevelRecord.t() | nil
   defdelegate tank_level(plant), to: @adapter
+
+  @doc """
+  Get the capacity of the tank in litres
+  """
+  @callback tank_capacity(Plant.t()) :: float()
+  defdelegate tank_capacity(plant), to: @adapter
 
   @callback create_tank_level_record(map()) ::
               {:ok, TankLevelRecord.t()} | {:error, Changeset.t()}
@@ -26,6 +35,20 @@ defmodule Niss.Plants do
 
   @callback scheduled_watering(Plant.t()) :: WateringRecord.t()
   defdelegate scheduled_watering(plant), to: @adapter
+
+  @doc """
+  List the final tank level of each day
+  """
+  @callback list_ending_tank_levels(DateTime.t(), DateTime.t()) :: [TankLevelRecord.t()]
+  defdelegate list_ending_tank_levels(from, to), to: @adapter
+
+  @doc """
+  List lighting, watering records.
+
+  `plant` is preloaded.
+  """
+  @callback list_records(DateTime.t(), DateTime.t()) :: [LightingRecord.t() | WateringRecord.t()]
+  defdelegate list_records(from, to), to: @adapter
 
   @callback list :: [Plant.t()]
   defdelegate list, to: @adapter

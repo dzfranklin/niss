@@ -1,16 +1,31 @@
-<main class="main-container">
-  <div class="alert-container">
-    <%= if has_flash?(@conn, :info) do %>
-    <p class="alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-    <% end %>
+<div>
+  <header class="flex flex-row justify-between mx-8 mt-4 mb-10">
+    <span class="text-lg">Niss</span>
 
-    <%= if has_flash?(@conn, :warn) do %>
-    <p class="alert-warn" role="alert"><%= get_flash(@conn, :warn) %></p>
-    <% end %>
+    <nav>
+      <ul class="flex flex-row justify-end text-lg">
+        <li class="mx-1">
+          <%= link "Home", to: Routes.root_path(@conn, :home), class: "link-novisited" %>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-    <%= if has_flash?(@conn, :error) do %>
-    <p class="alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-    <% end %>
-  </div>
-  <%= @inner_content %>
-</main>
+  <main class="main-container">
+    <div class="mb-10">
+      <%= if has_flash?(@conn, :info) do %>
+      <p class="alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <% end %>
+
+      <%= if has_flash?(@conn, :warn) do %>
+      <p class="alert-warn" role="alert"><%= get_flash(@conn, :warn) %></p>
+      <% end %>
+
+      <%= if has_flash?(@conn, :error) do %>
+      <p class="alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <% end %>
+    </div>
+
+    <%= @inner_content %>
+  </main>
+</div>

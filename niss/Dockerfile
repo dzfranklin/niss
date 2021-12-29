@@ -75,7 +75,9 @@ COPY priv/postgres_apt_key.gpg /etc/apt/trusted.gpg.d/pgdg-archive-keyring.gpg
 
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
   && apt-get update -y \
-  && apt-get install -y libstdc++6 openssl libncurses5 locales postgresql-client-14 dnsutils iputils-ping \
+  && apt-get install -y libstdc++6 openssl libncurses5 locales \
+  # For use when ssh-ing in
+  postgresql-client-14 dnsutils iputils-ping rsync \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale

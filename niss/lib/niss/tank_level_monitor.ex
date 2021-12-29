@@ -57,7 +57,7 @@ defmodule Niss.TankLevelMonitor do
     |> save_record!()
   end
 
-  defp meters_deep_to_liters(plant, depth) do
+  def meters_deep_to_liters(plant, depth) do
     cubic_meters = plant.tank_base_area * depth
     cubic_meters * 1_000
   end
