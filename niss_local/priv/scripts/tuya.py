@@ -46,11 +46,14 @@ def set_status(plug, args):
 
 
 def get_status(plug, _args):
-    status = plug.status()["dps"]["1"]
-    if status:
-        print("1")
+    status = plug.status()
+    if "dps" in status:
+        if status["dps"]["1"]:
+            print("1")
+        else:
+            print("0")
     else:
-        print("0")
+        raise ValueError("Unexpected status response: {}".format(status))
 
 
 handlers = {"set_status": set_status, "get_status": get_status}

@@ -31,6 +31,10 @@ defmodule NissLocal.Lights do
         if(status, do: "true", else: "false")
       ])
 
+    if get_by!(config) != status do
+      raise "new status not reflected"
+    end
+
     nil
   end
 
@@ -75,24 +79,40 @@ defmodule NissLocal.Lights do
 
     Logger.debug("Trying to manipulate plug labelled #{inspect(label)}: #{inspect(args)}")
 
-    {stdout, status} =
-      System.cmd(
-        tuya_bin(),
-        [
-          "--id",
-          id,
-          "--ip",
-          ip,
-          "--key",
-          key
-        ] ++ args
-      )
+    args =
+      [
+        "--id",
+        id,
+        "--ip",
+        ip,
+        "--key",
+        key
+      ] ++ args
+
+    %Porcelain.Result{err: stderr, out: stdout, status: status} =
+      Porcelain.exec(tuya_bin(), args, out: :string, err: :string)
 
     if status == 0 do
-      Logger.info("Successfully manipulated plug labelled #{inspect(label)}: #{inspect(args)}")
+      if stderr == "" do
+        Logger.info(
+          "Successfully manipulated plug labelled #{inspect(label)}: #{inspect(args)}. stderr:\n#{stderr}"
+        )
+      else
+        Logger.info(
+          "Successfully manipulated plug labelled #{inspect(label)}: #{inspect(args)}, but stderr:\n#{stderr}"
+        )
+      end
+
       {:ok, stdout}
     else
-      Logger.warn("Failed to manipulate plug labelled #{inspect(label)}, got stdout:\n#{stdout}")
+      if stdout == "" do
+        Logger.warn("Failed to manipulate plug labelled #{inspect(label)}, stderr:\n#{stderr}")
+      else
+        Logger.warn(
+          "Failed to manipulate plug labelled #{inspect(label)},\nstdout:\n#{stdout}\nstderr:\n#{stderr}"
+        )
+      end
+
       :error
     end
   end
