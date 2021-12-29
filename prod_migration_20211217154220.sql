@@ -1,0 +1,788 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.1 (Debian 14.1-1.pgdg110+1)
+-- Dumped by pg_dump version 14.1 (Debian 14.1-1.pgdg110+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: phone_texts; Type: TABLE; Schema: public; Owner: niss_ui
+--
+
+CREATE TABLE public.phone_texts (
+    id bigint NOT NULL,
+    message_sid text NOT NULL,
+    from_number text NOT NULL,
+    to_number text NOT NULL,
+    body text NOT NULL,
+    from_city text,
+    from_state text,
+    from_zip text,
+    from_country text,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.phone_texts OWNER TO niss_ui;
+
+--
+-- Name: phone_texts_id_seq; Type: SEQUENCE; Schema: public; Owner: niss_ui
+--
+
+CREATE SEQUENCE public.phone_texts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.phone_texts_id_seq OWNER TO niss_ui;
+
+--
+-- Name: phone_texts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: niss_ui
+--
+
+ALTER SEQUENCE public.phone_texts_id_seq OWNED BY public.phone_texts.id;
+
+
+--
+-- Name: plant_lighting_records; Type: TABLE; Schema: public; Owner: niss_ui
+--
+
+CREATE TABLE public.plant_lighting_records (
+    id bigint NOT NULL,
+    plant_id bigint NOT NULL,
+    "scheduled?" boolean DEFAULT false NOT NULL,
+    "on?" boolean DEFAULT false NOT NULL,
+    at timestamp without time zone NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.plant_lighting_records OWNER TO niss_ui;
+
+--
+-- Name: plant_lighting_records_id_seq; Type: SEQUENCE; Schema: public; Owner: niss_ui
+--
+
+CREATE SEQUENCE public.plant_lighting_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.plant_lighting_records_id_seq OWNER TO niss_ui;
+
+--
+-- Name: plant_lighting_records_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: niss_ui
+--
+
+ALTER SEQUENCE public.plant_lighting_records_id_seq OWNED BY public.plant_lighting_records.id;
+
+
+--
+-- Name: plant_watering_records; Type: TABLE; Schema: public; Owner: niss_ui
+--
+
+CREATE TABLE public.plant_watering_records (
+    id bigint NOT NULL,
+    plant_id bigint NOT NULL,
+    at timestamp without time zone NOT NULL,
+    duration_secs integer NOT NULL,
+    "scheduled?" boolean DEFAULT false NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.plant_watering_records OWNER TO niss_ui;
+
+--
+-- Name: plant_watering_records_id_seq; Type: SEQUENCE; Schema: public; Owner: niss_ui
+--
+
+CREATE SEQUENCE public.plant_watering_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.plant_watering_records_id_seq OWNER TO niss_ui;
+
+--
+-- Name: plant_watering_records_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: niss_ui
+--
+
+ALTER SEQUENCE public.plant_watering_records_id_seq OWNED BY public.plant_watering_records.id;
+
+
+--
+-- Name: plants; Type: TABLE; Schema: public; Owner: niss_ui
+--
+
+CREATE TABLE public.plants (
+    id bigint NOT NULL,
+    identifier character varying(255) NOT NULL,
+    timezone character varying(255) NOT NULL,
+    watering_interval_days integer NOT NULL,
+    watering_duration_secs integer NOT NULL,
+    watering_time time(0) without time zone NOT NULL,
+    lights_on time(0) without time zone NOT NULL,
+    lights_duration time(0) without time zone NOT NULL,
+    tank_base_area double precision NOT NULL,
+    tank_max_depth double precision NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.plants OWNER TO niss_ui;
+
+--
+-- Name: plants_id_seq; Type: SEQUENCE; Schema: public; Owner: niss_ui
+--
+
+CREATE SEQUENCE public.plants_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.plants_id_seq OWNER TO niss_ui;
+
+--
+-- Name: plants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: niss_ui
+--
+
+ALTER SEQUENCE public.plants_id_seq OWNED BY public.plants.id;
+
+
+--
+-- Name: plants_tank_level_records; Type: TABLE; Schema: public; Owner: niss_ui
+--
+
+CREATE TABLE public.plants_tank_level_records (
+    id bigint NOT NULL,
+    plant_id bigint NOT NULL,
+    remaining double precision,
+    total double precision NOT NULL,
+    "failed?" boolean DEFAULT false NOT NULL,
+    at timestamp(0) without time zone NOT NULL,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.plants_tank_level_records OWNER TO niss_ui;
+
+--
+-- Name: plants_tank_level_records_id_seq; Type: SEQUENCE; Schema: public; Owner: niss_ui
+--
+
+CREATE SEQUENCE public.plants_tank_level_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.plants_tank_level_records_id_seq OWNER TO niss_ui;
+
+--
+-- Name: plants_tank_level_records_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: niss_ui
+--
+
+ALTER SEQUENCE public.plants_tank_level_records_id_seq OWNED BY public.plants_tank_level_records.id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: niss_ui
+--
+
+CREATE TABLE public.schema_migrations (
+    version bigint NOT NULL,
+    inserted_at timestamp(0) without time zone
+);
+
+
+ALTER TABLE public.schema_migrations OWNER TO niss_ui;
+
+--
+-- Name: phone_texts id; Type: DEFAULT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.phone_texts ALTER COLUMN id SET DEFAULT nextval('public.phone_texts_id_seq'::regclass);
+
+
+--
+-- Name: plant_lighting_records id; Type: DEFAULT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plant_lighting_records ALTER COLUMN id SET DEFAULT nextval('public.plant_lighting_records_id_seq'::regclass);
+
+
+--
+-- Name: plant_watering_records id; Type: DEFAULT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plant_watering_records ALTER COLUMN id SET DEFAULT nextval('public.plant_watering_records_id_seq'::regclass);
+
+
+--
+-- Name: plants id; Type: DEFAULT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plants ALTER COLUMN id SET DEFAULT nextval('public.plants_id_seq'::regclass);
+
+
+--
+-- Name: plants_tank_level_records id; Type: DEFAULT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plants_tank_level_records ALTER COLUMN id SET DEFAULT nextval('public.plants_tank_level_records_id_seq'::regclass);
+
+
+--
+-- Data for Name: phone_texts; Type: TABLE DATA; Schema: public; Owner: niss_ui
+--
+
+COPY public.phone_texts (id, message_sid, from_number, to_number, body, from_city, from_state, from_zip, from_country, inserted_at, updated_at) FROM stdin;
+1	SMd630f2825d898f73e220da23c7e33417	+447871566623	+17208072089	To 7208072089	\N	\N	\N	GB	2021-12-24 18:46:19	2021-12-24 18:46:19
+2	SMaa4a6133155b7e283ca5bad5604b5573	+447871566623	+17208072089	Whoops, thought you were someone else	\N	\N	\N	GB	2021-12-24 18:46:40	2021-12-24 18:46:40
+3	SM372afb626edc64a0d3f06a91385b7f2b	+447871566623	+17207344134	To 7207344134	\N	\N	\N	GB	2021-12-24 18:47:17	2021-12-24 18:47:17
+\.
+
+
+--
+-- Data for Name: plant_lighting_records; Type: TABLE DATA; Schema: public; Owner: niss_ui
+--
+
+COPY public.plant_lighting_records (id, plant_id, "scheduled?", "on?", at, inserted_at, updated_at) FROM stdin;
+1	1	t	t	2021-12-23 16:00:00	2021-12-23 16:00:01	2021-12-23 16:00:01
+2	2	t	t	2021-12-23 16:00:00	2021-12-23 16:00:03	2021-12-23 16:00:03
+3	1	t	f	2021-12-24 05:00:00	2021-12-24 05:00:01	2021-12-24 05:00:01
+4	2	t	f	2021-12-24 06:00:00	2021-12-24 06:00:01	2021-12-24 06:00:01
+5	1	t	t	2021-12-24 16:00:00	2021-12-24 16:00:01	2021-12-24 16:00:01
+6	2	t	t	2021-12-24 16:00:00	2021-12-24 16:00:03	2021-12-24 16:00:03
+7	1	t	f	2021-12-25 05:00:00	2021-12-25 05:00:01	2021-12-25 05:00:01
+8	2	t	f	2021-12-25 06:00:00	2021-12-25 06:00:01	2021-12-25 06:00:01
+9	2	t	t	2021-12-25 16:00:00	2021-12-25 16:00:01	2021-12-25 16:00:01
+10	1	t	t	2021-12-25 16:00:00	2021-12-25 16:00:03	2021-12-25 16:00:03
+11	1	t	f	2021-12-26 05:00:00	2021-12-26 05:00:01	2021-12-26 05:00:01
+12	2	t	f	2021-12-26 06:00:00	2021-12-26 06:00:01	2021-12-26 06:00:01
+13	1	t	t	2021-12-26 16:00:00	2021-12-26 16:00:01	2021-12-26 16:00:01
+14	2	t	t	2021-12-26 16:00:00	2021-12-26 16:00:03	2021-12-26 16:00:03
+15	1	t	f	2021-12-27 05:00:00	2021-12-27 05:00:01	2021-12-27 05:00:01
+16	2	t	f	2021-12-27 06:00:00	2021-12-27 06:00:01	2021-12-27 06:00:01
+17	1	t	t	2021-12-27 16:00:00	2021-12-27 16:00:00	2021-12-27 16:00:00
+18	2	t	t	2021-12-27 16:00:00	2021-12-27 16:00:03	2021-12-27 16:00:03
+19	1	t	f	2021-12-28 05:00:00	2021-12-28 05:00:01	2021-12-28 05:00:01
+20	2	t	f	2021-12-28 06:00:00	2021-12-28 06:00:06	2021-12-28 06:00:06
+\.
+
+
+--
+-- Data for Name: plant_watering_records; Type: TABLE DATA; Schema: public; Owner: niss_ui
+--
+
+COPY public.plant_watering_records (id, plant_id, at, duration_secs, "scheduled?", inserted_at, updated_at) FROM stdin;
+1	2	2021-12-25 15:05:00	210	t	2021-12-25 15:08:30	2021-12-25 15:08:30
+2	1	2021-12-25 15:30:00	90	t	2021-12-25 15:31:30	2021-12-25 15:31:30
+3	2	2021-12-27 15:05:00	210	t	2021-12-27 15:08:30	2021-12-27 15:08:30
+4	1	2021-12-27 15:30:00	90	t	2021-12-27 15:31:30	2021-12-27 15:31:30
+\.
+
+
+--
+-- Data for Name: plants; Type: TABLE DATA; Schema: public; Owner: niss_ui
+--
+
+COPY public.plants (id, identifier, timezone, watering_interval_days, watering_duration_secs, watering_time, lights_on, lights_duration, tank_base_area, tank_max_depth, inserted_at, updated_at) FROM stdin;
+1	lime	America/Denver	2	90	08:30:00	09:00:00	13:00:00	0.065	0.335	2021-12-23 10:00:05	2021-12-23 10:01:41
+2	chillies	America/Denver	2	210	08:05:00	09:00:00	14:00:00	0.1846	0.2675	2021-12-23 14:41:33	2021-12-23 14:41:33
+\.
+
+
+--
+-- Data for Name: plants_tank_level_records; Type: TABLE DATA; Schema: public; Owner: niss_ui
+--
+
+COPY public.plants_tank_level_records (id, plant_id, remaining, total, "failed?", at, inserted_at, updated_at) FROM stdin;
+1	1	19.500000000000004	21.775000000000002	f	2021-12-23 10:57:38	2021-12-23 10:57:38	2021-12-23 10:57:38
+2	1	19.500000000000004	21.775000000000002	f	2021-12-23 11:57:40	2021-12-23 11:57:40	2021-12-23 11:57:40
+3	1	19.500000000000004	21.775000000000002	f	2021-12-23 13:56:58	2021-12-23 13:56:58	2021-12-23 13:56:58
+4	1	19.500000000000004	21.775000000000002	f	2021-12-23 14:57:01	2021-12-23 14:57:01	2021-12-23 14:57:01
+5	2	36.919999999999995	49.3805	f	2021-12-23 14:57:03	2021-12-23 14:57:03	2021-12-23 14:57:03
+6	1	19.500000000000004	21.775000000000002	f	2021-12-23 16:58:47	2021-12-23 16:58:47	2021-12-23 16:58:47
+7	2	36.919999999999995	49.3805	f	2021-12-23 16:58:48	2021-12-23 16:58:48	2021-12-23 16:58:48
+8	1	19.500000000000004	21.775000000000002	f	2021-12-23 18:08:23	2021-12-23 18:08:23	2021-12-23 18:08:23
+9	2	36.919999999999995	49.3805	f	2021-12-23 18:08:24	2021-12-23 18:08:24	2021-12-23 18:08:24
+10	1	19.500000000000004	21.775000000000002	f	2021-12-23 19:08:25	2021-12-23 19:08:25	2021-12-23 19:08:25
+11	2	36.919999999999995	49.3805	f	2021-12-23 19:08:26	2021-12-23 19:08:26	2021-12-23 19:08:26
+12	1	19.5	21.775000000000002	f	2021-12-23 20:46:05	2021-12-23 20:46:05	2021-12-23 20:46:05
+13	2	36.92	49.3805	f	2021-12-23 20:46:06	2021-12-23 20:46:06	2021-12-23 20:46:06
+14	1	19.5	21.775000000000002	f	2021-12-23 21:46:07	2021-12-23 21:46:07	2021-12-23 21:46:07
+15	2	36.92	49.3805	f	2021-12-23 21:46:08	2021-12-23 21:46:08	2021-12-23 21:46:08
+16	1	19.5	21.775000000000002	f	2021-12-23 22:46:10	2021-12-23 22:46:10	2021-12-23 22:46:10
+17	2	36.92	49.3805	f	2021-12-23 22:46:10	2021-12-23 22:46:10	2021-12-23 22:46:10
+18	1	19.5	21.775000000000002	f	2021-12-23 23:46:11	2021-12-23 23:46:11	2021-12-23 23:46:11
+19	2	36.92	49.3805	f	2021-12-23 23:46:12	2021-12-23 23:46:12	2021-12-23 23:46:12
+20	1	19.5	21.775000000000002	f	2021-12-24 00:46:13	2021-12-24 00:46:13	2021-12-24 00:46:13
+21	2	36.92	49.3805	f	2021-12-24 00:46:14	2021-12-24 00:46:14	2021-12-24 00:46:14
+22	1	19.5	21.775000000000002	f	2021-12-24 01:46:15	2021-12-24 01:46:15	2021-12-24 01:46:15
+23	2	36.92	49.3805	f	2021-12-24 01:46:16	2021-12-24 01:46:16	2021-12-24 01:46:16
+24	1	19.5	21.775000000000002	f	2021-12-24 02:46:17	2021-12-24 02:46:17	2021-12-24 02:46:17
+25	2	36.92	49.3805	f	2021-12-24 02:46:18	2021-12-24 02:46:18	2021-12-24 02:46:18
+26	1	19.5	21.775000000000002	f	2021-12-24 03:46:19	2021-12-24 03:46:19	2021-12-24 03:46:19
+27	2	36.92	49.3805	f	2021-12-24 03:46:19	2021-12-24 03:46:19	2021-12-24 03:46:19
+28	1	19.5	21.775000000000002	f	2021-12-24 04:46:21	2021-12-24 04:46:21	2021-12-24 04:46:21
+29	2	36.92	49.3805	f	2021-12-24 04:46:21	2021-12-24 04:46:21	2021-12-24 04:46:21
+30	1	19.5	21.775000000000002	f	2021-12-24 05:46:22	2021-12-24 05:46:22	2021-12-24 05:46:22
+31	2	36.92	49.3805	f	2021-12-24 05:46:23	2021-12-24 05:46:23	2021-12-24 05:46:23
+32	1	19.5	21.775000000000002	f	2021-12-24 06:46:24	2021-12-24 06:46:24	2021-12-24 06:46:24
+33	2	36.92	49.3805	f	2021-12-24 06:46:25	2021-12-24 06:46:25	2021-12-24 06:46:25
+34	1	19.5	21.775000000000002	f	2021-12-24 07:46:26	2021-12-24 07:46:26	2021-12-24 07:46:26
+35	2	36.92	49.3805	f	2021-12-24 07:46:26	2021-12-24 07:46:26	2021-12-24 07:46:26
+36	1	19.5	21.775000000000002	f	2021-12-24 08:46:27	2021-12-24 08:46:27	2021-12-24 08:46:27
+37	2	36.92	49.3805	f	2021-12-24 08:46:28	2021-12-24 08:46:28	2021-12-24 08:46:28
+38	1	19.5	21.775000000000002	f	2021-12-24 09:46:29	2021-12-24 09:46:29	2021-12-24 09:46:29
+39	2	36.92	49.3805	f	2021-12-24 09:46:30	2021-12-24 09:46:30	2021-12-24 09:46:30
+40	1	19.5	21.775000000000002	f	2021-12-24 10:46:30	2021-12-24 10:46:30	2021-12-24 10:46:30
+41	2	36.92	49.3805	f	2021-12-24 10:46:31	2021-12-24 10:46:31	2021-12-24 10:46:31
+42	1	19.5	21.775000000000002	f	2021-12-24 11:46:32	2021-12-24 11:46:32	2021-12-24 11:46:32
+43	2	36.92	49.3805	f	2021-12-24 11:46:33	2021-12-24 11:46:33	2021-12-24 11:46:33
+44	1	19.5	21.775000000000002	f	2021-12-24 12:46:34	2021-12-24 12:46:34	2021-12-24 12:46:34
+45	2	36.92	49.3805	f	2021-12-24 12:46:34	2021-12-24 12:46:34	2021-12-24 12:46:34
+46	1	19.5	21.775000000000002	f	2021-12-24 13:46:35	2021-12-24 13:46:35	2021-12-24 13:46:35
+47	2	36.92	49.3805	f	2021-12-24 13:46:36	2021-12-24 13:46:36	2021-12-24 13:46:36
+48	1	19.5	21.775000000000002	f	2021-12-24 14:46:37	2021-12-24 14:46:37	2021-12-24 14:46:37
+49	2	36.92	49.3805	f	2021-12-24 14:46:38	2021-12-24 14:46:38	2021-12-24 14:46:38
+50	1	19.5	21.775000000000002	f	2021-12-24 15:46:38	2021-12-24 15:46:38	2021-12-24 15:46:38
+51	2	36.92	49.3805	f	2021-12-24 15:46:39	2021-12-24 15:46:39	2021-12-24 15:46:39
+52	1	19.5	21.775000000000002	f	2021-12-24 16:46:40	2021-12-24 16:46:40	2021-12-24 16:46:40
+53	2	36.92	49.3805	f	2021-12-24 16:46:41	2021-12-24 16:46:41	2021-12-24 16:46:41
+54	1	19.5	21.775000000000002	f	2021-12-24 17:46:42	2021-12-24 17:46:42	2021-12-24 17:46:42
+55	2	36.92	49.3805	f	2021-12-24 17:46:42	2021-12-24 17:46:42	2021-12-24 17:46:42
+56	1	19.5	21.775000000000002	f	2021-12-24 18:46:43	2021-12-24 18:46:43	2021-12-24 18:46:43
+57	2	36.92	49.3805	f	2021-12-24 18:46:44	2021-12-24 18:46:44	2021-12-24 18:46:44
+58	1	19.5	21.775000000000002	f	2021-12-24 19:46:45	2021-12-24 19:46:45	2021-12-24 19:46:45
+59	2	36.92	49.3805	f	2021-12-24 19:46:46	2021-12-24 19:46:46	2021-12-24 19:46:46
+60	1	19.5	21.775000000000002	f	2021-12-24 20:46:47	2021-12-24 20:46:47	2021-12-24 20:46:47
+61	2	36.92	49.3805	f	2021-12-24 20:46:47	2021-12-24 20:46:47	2021-12-24 20:46:47
+62	1	19.5	21.775000000000002	f	2021-12-24 21:46:48	2021-12-24 21:46:48	2021-12-24 21:46:48
+63	2	36.92	49.3805	f	2021-12-24 21:46:49	2021-12-24 21:46:49	2021-12-24 21:46:49
+64	1	19.5	21.775000000000002	f	2021-12-24 22:46:50	2021-12-24 22:46:50	2021-12-24 22:46:50
+65	2	36.92	49.3805	f	2021-12-24 22:46:50	2021-12-24 22:46:50	2021-12-24 22:46:50
+66	1	19.5	21.775000000000002	f	2021-12-24 23:46:51	2021-12-24 23:46:51	2021-12-24 23:46:51
+67	2	36.92	49.3805	f	2021-12-24 23:46:52	2021-12-24 23:46:52	2021-12-24 23:46:52
+68	1	19.5	21.775000000000002	f	2021-12-25 00:46:53	2021-12-25 00:46:53	2021-12-25 00:46:53
+69	2	36.92	49.3805	f	2021-12-25 00:46:54	2021-12-25 00:46:54	2021-12-25 00:46:54
+70	1	19.5	21.775000000000002	f	2021-12-25 01:46:54	2021-12-25 01:46:54	2021-12-25 01:46:54
+71	2	36.92	49.3805	f	2021-12-25 01:46:55	2021-12-25 01:46:55	2021-12-25 01:46:55
+72	1	19.5	21.775000000000002	f	2021-12-25 02:46:56	2021-12-25 02:46:56	2021-12-25 02:46:56
+73	2	36.92	49.3805	f	2021-12-25 02:46:57	2021-12-25 02:46:57	2021-12-25 02:46:57
+74	1	19.5	21.775000000000002	f	2021-12-25 03:46:58	2021-12-25 03:46:58	2021-12-25 03:46:58
+75	2	36.92	49.3805	f	2021-12-25 03:46:58	2021-12-25 03:46:58	2021-12-25 03:46:58
+76	1	19.5	21.775000000000002	f	2021-12-25 04:46:59	2021-12-25 04:46:59	2021-12-25 04:46:59
+77	2	36.92	49.3805	f	2021-12-25 04:47:00	2021-12-25 04:47:00	2021-12-25 04:47:00
+78	1	19.5	21.775000000000002	f	2021-12-25 05:47:01	2021-12-25 05:47:01	2021-12-25 05:47:01
+89	2	36.92	49.3805	f	2021-12-25 10:47:09	2021-12-25 10:47:09	2021-12-25 10:47:09
+97	2	36.92	49.3805	f	2021-12-25 14:47:15	2021-12-25 14:47:15	2021-12-25 14:47:15
+79	2	36.92	49.3805	f	2021-12-25 05:47:01	2021-12-25 05:47:01	2021-12-25 05:47:01
+90	1	19.5	21.775000000000002	f	2021-12-25 11:47:10	2021-12-25 11:47:10	2021-12-25 11:47:10
+80	1	19.5	21.775000000000002	f	2021-12-25 06:47:02	2021-12-25 06:47:02	2021-12-25 06:47:02
+82	1	19.5	21.775000000000002	f	2021-12-25 07:47:04	2021-12-25 07:47:04	2021-12-25 07:47:04
+95	2	36.92	49.3805	f	2021-12-25 13:47:14	2021-12-25 13:47:14	2021-12-25 13:47:14
+81	2	36.92	49.3805	f	2021-12-25 06:47:03	2021-12-25 06:47:03	2021-12-25 06:47:03
+94	1	19.5	21.775000000000002	f	2021-12-25 13:47:13	2021-12-25 13:47:13	2021-12-25 13:47:13
+83	2	36.92	49.3805	f	2021-12-25 07:47:04	2021-12-25 07:47:04	2021-12-25 07:47:04
+85	2	36.92	49.3805	f	2021-12-25 08:47:06	2021-12-25 08:47:06	2021-12-25 08:47:06
+84	1	19.5	21.775000000000002	f	2021-12-25 08:47:05	2021-12-25 08:47:05	2021-12-25 08:47:05
+86	1	19.5	21.775000000000002	f	2021-12-25 09:47:07	2021-12-25 09:47:07	2021-12-25 09:47:07
+88	1	19.5	21.775000000000002	f	2021-12-25 10:47:08	2021-12-25 10:47:08	2021-12-25 10:47:08
+87	2	36.92	49.3805	f	2021-12-25 09:47:08	2021-12-25 09:47:08	2021-12-25 09:47:08
+96	1	19.5	21.775000000000002	f	2021-12-25 14:47:15	2021-12-25 14:47:15	2021-12-25 14:47:15
+91	2	36.92	49.3805	f	2021-12-25 11:47:11	2021-12-25 11:47:11	2021-12-25 11:47:11
+92	1	19.5	21.775000000000002	f	2021-12-25 12:47:12	2021-12-25 12:47:12	2021-12-25 12:47:12
+93	2	36.92	49.3805	f	2021-12-25 12:47:12	2021-12-25 12:47:12	2021-12-25 12:47:12
+98	1	19.5	21.775000000000002	f	2021-12-25 15:47:16	2021-12-25 15:47:16	2021-12-25 15:47:16
+99	2	36.92	49.3805	f	2021-12-25 15:47:17	2021-12-25 15:47:17	2021-12-25 15:47:17
+100	1	19.5	21.775000000000002	f	2021-12-25 16:47:18	2021-12-25 16:47:18	2021-12-25 16:47:18
+101	2	36.92	49.3805	f	2021-12-25 16:47:18	2021-12-25 16:47:18	2021-12-25 16:47:18
+102	1	19.5	21.775000000000002	f	2021-12-25 17:47:19	2021-12-25 17:47:19	2021-12-25 17:47:19
+103	2	36.92	49.3805	f	2021-12-25 17:47:20	2021-12-25 17:47:20	2021-12-25 17:47:20
+104	1	19.5	21.775000000000002	f	2021-12-25 18:47:21	2021-12-25 18:47:21	2021-12-25 18:47:21
+105	2	36.92	49.3805	f	2021-12-25 18:47:22	2021-12-25 18:47:22	2021-12-25 18:47:22
+106	1	19.5	21.775000000000002	f	2021-12-25 19:47:23	2021-12-25 19:47:23	2021-12-25 19:47:23
+107	2	36.92	49.3805	f	2021-12-25 19:47:23	2021-12-25 19:47:23	2021-12-25 19:47:23
+108	1	19.5	21.775000000000002	f	2021-12-25 20:47:24	2021-12-25 20:47:24	2021-12-25 20:47:24
+109	2	36.92	49.3805	f	2021-12-25 20:47:25	2021-12-25 20:47:25	2021-12-25 20:47:25
+110	1	19.5	21.775000000000002	f	2021-12-25 21:47:26	2021-12-25 21:47:26	2021-12-25 21:47:26
+111	2	36.92	49.3805	f	2021-12-25 21:47:26	2021-12-25 21:47:26	2021-12-25 21:47:26
+112	1	19.5	21.775000000000002	f	2021-12-25 22:47:27	2021-12-25 22:47:27	2021-12-25 22:47:27
+113	2	36.92	49.3805	f	2021-12-25 22:47:28	2021-12-25 22:47:28	2021-12-25 22:47:28
+114	1	19.5	21.775000000000002	f	2021-12-25 23:47:29	2021-12-25 23:47:29	2021-12-25 23:47:29
+115	2	36.92	49.3805	f	2021-12-25 23:47:30	2021-12-25 23:47:30	2021-12-25 23:47:30
+116	1	19.5	21.775000000000002	f	2021-12-26 00:47:30	2021-12-26 00:47:30	2021-12-26 00:47:30
+117	2	36.92	49.3805	f	2021-12-26 00:47:31	2021-12-26 00:47:31	2021-12-26 00:47:31
+118	1	19.5	21.775000000000002	f	2021-12-26 01:47:32	2021-12-26 01:47:32	2021-12-26 01:47:32
+119	2	36.92	49.3805	f	2021-12-26 01:47:33	2021-12-26 01:47:33	2021-12-26 01:47:33
+120	1	19.5	21.775000000000002	f	2021-12-26 02:47:34	2021-12-26 02:47:34	2021-12-26 02:47:34
+121	2	36.92	49.3805	f	2021-12-26 02:47:34	2021-12-26 02:47:34	2021-12-26 02:47:34
+122	1	19.5	21.775000000000002	f	2021-12-26 03:47:35	2021-12-26 03:47:35	2021-12-26 03:47:35
+123	2	36.92	49.3805	f	2021-12-26 03:47:36	2021-12-26 03:47:36	2021-12-26 03:47:36
+124	1	19.5	21.775000000000002	f	2021-12-26 04:47:37	2021-12-26 04:47:37	2021-12-26 04:47:37
+125	2	36.92	49.3805	f	2021-12-26 04:47:37	2021-12-26 04:47:37	2021-12-26 04:47:37
+126	1	19.5	21.775000000000002	f	2021-12-26 05:47:38	2021-12-26 05:47:38	2021-12-26 05:47:38
+127	2	36.92	49.3805	f	2021-12-26 05:47:39	2021-12-26 05:47:39	2021-12-26 05:47:39
+128	1	19.5	21.775000000000002	f	2021-12-26 06:47:40	2021-12-26 06:47:40	2021-12-26 06:47:40
+129	2	36.92	49.3805	f	2021-12-26 06:47:40	2021-12-26 06:47:40	2021-12-26 06:47:40
+130	1	19.5	21.775000000000002	f	2021-12-26 07:47:41	2021-12-26 07:47:41	2021-12-26 07:47:41
+131	2	36.92	49.3805	f	2021-12-26 07:47:42	2021-12-26 07:47:42	2021-12-26 07:47:42
+132	1	19.5	21.775000000000002	f	2021-12-26 08:47:43	2021-12-26 08:47:43	2021-12-26 08:47:43
+133	2	36.92	49.3805	f	2021-12-26 08:47:44	2021-12-26 08:47:44	2021-12-26 08:47:44
+134	1	19.5	21.775000000000002	f	2021-12-26 09:47:44	2021-12-26 09:47:44	2021-12-26 09:47:44
+135	2	36.92	49.3805	f	2021-12-26 09:47:45	2021-12-26 09:47:45	2021-12-26 09:47:45
+136	1	19.5	21.775000000000002	f	2021-12-26 10:47:46	2021-12-26 10:47:46	2021-12-26 10:47:46
+137	2	36.92	49.3805	f	2021-12-26 10:47:47	2021-12-26 10:47:47	2021-12-26 10:47:47
+138	1	19.5	21.775000000000002	f	2021-12-26 11:47:48	2021-12-26 11:47:48	2021-12-26 11:47:48
+139	2	36.92	49.3805	f	2021-12-26 11:47:48	2021-12-26 11:47:48	2021-12-26 11:47:48
+140	1	19.5	21.775000000000002	f	2021-12-26 12:47:49	2021-12-26 12:47:49	2021-12-26 12:47:49
+141	2	36.92	49.3805	f	2021-12-26 12:47:50	2021-12-26 12:47:50	2021-12-26 12:47:50
+142	1	19.5	21.775000000000002	f	2021-12-26 13:47:51	2021-12-26 13:47:51	2021-12-26 13:47:51
+143	2	36.92	49.3805	f	2021-12-26 13:47:51	2021-12-26 13:47:51	2021-12-26 13:47:51
+144	1	19.5	21.775000000000002	f	2021-12-26 14:47:52	2021-12-26 14:47:52	2021-12-26 14:47:52
+145	2	36.92	49.3805	f	2021-12-26 14:47:53	2021-12-26 14:47:53	2021-12-26 14:47:53
+146	1	19.5	21.775000000000002	f	2021-12-26 15:47:54	2021-12-26 15:47:54	2021-12-26 15:47:54
+147	2	36.92	49.3805	f	2021-12-26 15:47:54	2021-12-26 15:47:54	2021-12-26 15:47:54
+148	1	19.5	21.775000000000002	f	2021-12-26 16:47:55	2021-12-26 16:47:55	2021-12-26 16:47:55
+149	2	36.92	49.3805	f	2021-12-26 16:47:56	2021-12-26 16:47:56	2021-12-26 16:47:56
+150	1	19.5	21.775000000000002	f	2021-12-26 17:47:57	2021-12-26 17:47:57	2021-12-26 17:47:57
+151	2	36.92	49.3805	f	2021-12-26 17:47:58	2021-12-26 17:47:58	2021-12-26 17:47:58
+152	1	19.5	21.775000000000002	f	2021-12-26 18:47:59	2021-12-26 18:47:59	2021-12-26 18:47:59
+153	2	36.92	49.3805	f	2021-12-26 18:47:59	2021-12-26 18:47:59	2021-12-26 18:47:59
+154	1	19.5	21.775000000000002	f	2021-12-26 19:48:00	2021-12-26 19:48:00	2021-12-26 19:48:00
+155	2	36.92	49.3805	f	2021-12-26 19:48:01	2021-12-26 19:48:01	2021-12-26 19:48:01
+156	1	19.5	21.775000000000002	f	2021-12-26 20:48:02	2021-12-26 20:48:02	2021-12-26 20:48:02
+157	2	36.92	49.3805	f	2021-12-26 20:48:02	2021-12-26 20:48:02	2021-12-26 20:48:02
+158	1	19.5	21.775000000000002	f	2021-12-26 21:48:03	2021-12-26 21:48:03	2021-12-26 21:48:03
+159	2	36.92	49.3805	f	2021-12-26 21:48:04	2021-12-26 21:48:04	2021-12-26 21:48:04
+160	1	19.5	21.775000000000002	f	2021-12-26 22:48:05	2021-12-26 22:48:05	2021-12-26 22:48:05
+161	2	36.92	49.3805	f	2021-12-26 22:48:06	2021-12-26 22:48:06	2021-12-26 22:48:06
+162	1	19.5	21.775000000000002	f	2021-12-26 23:48:07	2021-12-26 23:48:07	2021-12-26 23:48:07
+163	2	36.92	49.3805	f	2021-12-26 23:48:07	2021-12-26 23:48:07	2021-12-26 23:48:07
+164	1	19.5	21.775000000000002	f	2021-12-27 00:48:08	2021-12-27 00:48:08	2021-12-27 00:48:08
+165	2	36.92	49.3805	f	2021-12-27 00:48:09	2021-12-27 00:48:09	2021-12-27 00:48:09
+166	1	19.5	21.775000000000002	f	2021-12-27 01:48:11	2021-12-27 01:48:11	2021-12-27 01:48:11
+167	2	36.92	49.3805	f	2021-12-27 01:48:11	2021-12-27 01:48:11	2021-12-27 01:48:11
+168	1	19.5	21.775000000000002	f	2021-12-27 02:48:12	2021-12-27 02:48:12	2021-12-27 02:48:12
+169	2	36.92	49.3805	f	2021-12-27 02:48:13	2021-12-27 02:48:13	2021-12-27 02:48:13
+170	1	19.5	21.775000000000002	f	2021-12-27 03:48:14	2021-12-27 03:48:14	2021-12-27 03:48:14
+171	2	36.92	49.3805	f	2021-12-27 03:48:14	2021-12-27 03:48:14	2021-12-27 03:48:14
+172	1	19.5	21.775000000000002	f	2021-12-27 04:48:15	2021-12-27 04:48:15	2021-12-27 04:48:15
+173	2	36.92	49.3805	f	2021-12-27 04:48:16	2021-12-27 04:48:16	2021-12-27 04:48:16
+174	1	19.5	21.775000000000002	f	2021-12-27 05:48:17	2021-12-27 05:48:17	2021-12-27 05:48:17
+175	2	36.92	49.3805	f	2021-12-27 05:48:18	2021-12-27 05:48:18	2021-12-27 05:48:18
+176	1	19.5	21.775000000000002	f	2021-12-27 06:48:18	2021-12-27 06:48:18	2021-12-27 06:48:18
+177	2	36.92	49.3805	f	2021-12-27 06:48:19	2021-12-27 06:48:19	2021-12-27 06:48:19
+178	1	19.5	21.775000000000002	f	2021-12-27 07:48:20	2021-12-27 07:48:20	2021-12-27 07:48:20
+179	2	36.92	49.3805	f	2021-12-27 07:48:21	2021-12-27 07:48:21	2021-12-27 07:48:21
+180	1	19.5	21.775000000000002	f	2021-12-27 08:48:22	2021-12-27 08:48:22	2021-12-27 08:48:22
+181	2	36.92	49.3805	f	2021-12-27 08:48:22	2021-12-27 08:48:22	2021-12-27 08:48:22
+182	1	19.5	21.775000000000002	f	2021-12-27 09:48:23	2021-12-27 09:48:23	2021-12-27 09:48:23
+183	2	36.92	49.3805	f	2021-12-27 09:48:24	2021-12-27 09:48:24	2021-12-27 09:48:24
+184	1	19.5	21.775000000000002	f	2021-12-27 10:48:25	2021-12-27 10:48:25	2021-12-27 10:48:25
+185	2	36.92	49.3805	f	2021-12-27 10:48:25	2021-12-27 10:48:25	2021-12-27 10:48:25
+188	1	19.5	21.775000000000002	f	2021-12-27 12:48:28	2021-12-27 12:48:28	2021-12-27 12:48:28
+186	1	19.5	21.775000000000002	f	2021-12-27 11:48:26	2021-12-27 11:48:26	2021-12-27 11:48:26
+199	2	36.92	49.3805	f	2021-12-27 17:48:36	2021-12-27 17:48:36	2021-12-27 17:48:36
+187	2	36.92	49.3805	f	2021-12-27 11:48:27	2021-12-27 11:48:27	2021-12-27 11:48:27
+190	1	19.5	21.775000000000002	f	2021-12-27 13:48:29	2021-12-27 13:48:29	2021-12-27 13:48:29
+194	1	19.5	21.775000000000002	f	2021-12-27 15:48:33	2021-12-27 15:48:33	2021-12-27 15:48:33
+196	1	19.5	21.775000000000002	f	2021-12-27 16:48:34	2021-12-27 16:48:34	2021-12-27 16:48:34
+189	2	36.92	49.3805	f	2021-12-27 12:48:29	2021-12-27 12:48:29	2021-12-27 12:48:29
+191	2	36.92	49.3805	f	2021-12-27 13:48:30	2021-12-27 13:48:30	2021-12-27 13:48:30
+195	2	36.92	49.3805	f	2021-12-27 15:48:33	2021-12-27 15:48:33	2021-12-27 15:48:33
+192	1	19.5	21.775000000000002	f	2021-12-27 14:48:31	2021-12-27 14:48:31	2021-12-27 14:48:31
+193	2	36.92	49.3805	f	2021-12-27 14:48:32	2021-12-27 14:48:32	2021-12-27 14:48:32
+197	2	36.92	49.3805	f	2021-12-27 16:48:35	2021-12-27 16:48:35	2021-12-27 16:48:35
+198	1	19.5	21.775000000000002	f	2021-12-27 17:48:36	2021-12-27 17:48:36	2021-12-27 17:48:36
+200	1	19.5	21.775000000000002	f	2021-12-27 19:13:11	2021-12-27 19:13:11	2021-12-27 19:13:11
+201	2	36.92	49.3805	f	2021-12-27 19:13:12	2021-12-27 19:13:12	2021-12-27 19:13:12
+202	1	19.5	21.775000000000002	f	2021-12-27 20:25:01	2021-12-27 20:25:01	2021-12-27 20:25:01
+203	2	36.92	49.3805	f	2021-12-27 20:25:02	2021-12-27 20:25:02	2021-12-27 20:25:02
+204	1	19.5	21.775000000000002	f	2021-12-27 21:25:03	2021-12-27 21:25:03	2021-12-27 21:25:03
+205	2	36.92	49.3805	f	2021-12-27 21:25:04	2021-12-27 21:25:04	2021-12-27 21:25:04
+206	1	19.5	21.775000000000002	f	2021-12-27 23:09:12	2021-12-27 23:09:12	2021-12-27 23:09:12
+207	2	36.92	49.3805	f	2021-12-27 23:09:13	2021-12-27 23:09:13	2021-12-27 23:09:13
+208	1	19.5	21.775000000000002	f	2021-12-28 00:09:14	2021-12-28 00:09:14	2021-12-28 00:09:14
+209	2	36.92	49.3805	f	2021-12-28 00:09:15	2021-12-28 00:09:15	2021-12-28 00:09:15
+210	1	19.5	21.775000000000002	f	2021-12-28 01:09:16	2021-12-28 01:09:16	2021-12-28 01:09:16
+211	2	36.92	49.3805	f	2021-12-28 01:09:17	2021-12-28 01:09:17	2021-12-28 01:09:17
+212	1	19.5	21.775000000000002	f	2021-12-28 02:09:18	2021-12-28 02:09:18	2021-12-28 02:09:18
+213	2	36.92	49.3805	f	2021-12-28 02:09:19	2021-12-28 02:09:19	2021-12-28 02:09:19
+214	1	19.5	21.775000000000002	f	2021-12-28 03:09:20	2021-12-28 03:09:20	2021-12-28 03:09:20
+215	2	36.92	49.3805	f	2021-12-28 03:09:21	2021-12-28 03:09:21	2021-12-28 03:09:21
+216	1	19.5	21.775000000000002	f	2021-12-28 04:09:22	2021-12-28 04:09:22	2021-12-28 04:09:22
+217	2	36.92	49.3805	f	2021-12-28 04:09:23	2021-12-28 04:09:23	2021-12-28 04:09:23
+218	1	19.5	21.775000000000002	f	2021-12-28 05:09:24	2021-12-28 05:09:24	2021-12-28 05:09:24
+219	2	36.92	49.3805	f	2021-12-28 05:09:25	2021-12-28 05:09:25	2021-12-28 05:09:25
+220	1	19.5	21.775000000000002	f	2021-12-28 06:09:26	2021-12-28 06:09:26	2021-12-28 06:09:26
+221	2	36.92	49.3805	f	2021-12-28 06:09:27	2021-12-28 06:09:27	2021-12-28 06:09:27
+222	1	19.5	21.775000000000002	f	2021-12-28 07:09:28	2021-12-28 07:09:28	2021-12-28 07:09:28
+223	2	36.92	49.3805	f	2021-12-28 07:09:29	2021-12-28 07:09:29	2021-12-28 07:09:29
+224	1	19.5	21.775000000000002	f	2021-12-28 08:09:29	2021-12-28 08:09:29	2021-12-28 08:09:29
+225	2	36.92	49.3805	f	2021-12-28 08:09:30	2021-12-28 08:09:30	2021-12-28 08:09:30
+226	1	19.5	21.775000000000002	f	2021-12-28 09:09:31	2021-12-28 09:09:31	2021-12-28 09:09:31
+227	2	36.92	49.3805	f	2021-12-28 09:09:32	2021-12-28 09:09:32	2021-12-28 09:09:32
+228	1	19.5	21.775000000000002	f	2021-12-28 10:09:33	2021-12-28 10:09:33	2021-12-28 10:09:33
+229	2	36.92	49.3805	f	2021-12-28 10:09:33	2021-12-28 10:09:33	2021-12-28 10:09:33
+230	1	19.5	21.775000000000002	f	2021-12-28 11:09:34	2021-12-28 11:09:34	2021-12-28 11:09:34
+231	2	36.92	49.3805	f	2021-12-28 11:09:35	2021-12-28 11:09:35	2021-12-28 11:09:35
+232	1	19.5	21.775000000000002	f	2021-12-28 12:09:36	2021-12-28 12:09:36	2021-12-28 12:09:36
+233	2	36.92	49.3805	f	2021-12-28 12:09:37	2021-12-28 12:09:37	2021-12-28 12:09:37
+234	1	19.5	21.775000000000002	f	2021-12-28 13:09:38	2021-12-28 13:09:38	2021-12-28 13:09:38
+235	2	36.92	49.3805	f	2021-12-28 13:09:39	2021-12-28 13:09:39	2021-12-28 13:09:39
+236	1	19.5	21.775000000000002	f	2021-12-28 14:09:40	2021-12-28 14:09:40	2021-12-28 14:09:40
+237	2	36.92	49.3805	f	2021-12-28 14:09:40	2021-12-28 14:09:40	2021-12-28 14:09:40
+\.
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: niss_ui
+--
+
+COPY public.schema_migrations (version, inserted_at) FROM stdin;
+20211215111006	2021-12-23 09:45:32
+20211217154220	2021-12-23 09:45:36
+20211223192601	2021-12-23 19:36:48
+\.
+
+
+--
+-- Name: phone_texts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: niss_ui
+--
+
+SELECT pg_catalog.setval('public.phone_texts_id_seq', 3, true);
+
+
+--
+-- Name: plant_lighting_records_id_seq; Type: SEQUENCE SET; Schema: public; Owner: niss_ui
+--
+
+SELECT pg_catalog.setval('public.plant_lighting_records_id_seq', 20, true);
+
+
+--
+-- Name: plant_watering_records_id_seq; Type: SEQUENCE SET; Schema: public; Owner: niss_ui
+--
+
+SELECT pg_catalog.setval('public.plant_watering_records_id_seq', 4, true);
+
+
+--
+-- Name: plants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: niss_ui
+--
+
+SELECT pg_catalog.setval('public.plants_id_seq', 2, true);
+
+
+--
+-- Name: plants_tank_level_records_id_seq; Type: SEQUENCE SET; Schema: public; Owner: niss_ui
+--
+
+SELECT pg_catalog.setval('public.plants_tank_level_records_id_seq', 237, true);
+
+
+--
+-- Name: phone_texts phone_texts_pkey; Type: CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.phone_texts
+    ADD CONSTRAINT phone_texts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plant_lighting_records plant_lighting_records_pkey; Type: CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plant_lighting_records
+    ADD CONSTRAINT plant_lighting_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plant_watering_records plant_watering_records_pkey; Type: CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plant_watering_records
+    ADD CONSTRAINT plant_watering_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plants plants_pkey; Type: CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plants
+    ADD CONSTRAINT plants_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: plants_tank_level_records plants_tank_level_records_pkey; Type: CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plants_tank_level_records
+    ADD CONSTRAINT plants_tank_level_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: phone_texts_from_number_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX phone_texts_from_number_index ON public.phone_texts USING btree (from_number);
+
+
+--
+-- Name: phone_texts_message_sid_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE UNIQUE INDEX phone_texts_message_sid_index ON public.phone_texts USING btree (message_sid);
+
+
+--
+-- Name: phone_texts_to_number_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX phone_texts_to_number_index ON public.phone_texts USING btree (to_number);
+
+
+--
+-- Name: plant_lighting_records_at_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plant_lighting_records_at_index ON public.plant_lighting_records USING btree (at);
+
+
+--
+-- Name: plant_lighting_records_plant_id_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plant_lighting_records_plant_id_index ON public.plant_lighting_records USING btree (plant_id);
+
+
+--
+-- Name: plant_lighting_records_scheduled_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plant_lighting_records_scheduled_index ON public.plant_lighting_records USING btree ("scheduled?");
+
+
+--
+-- Name: plant_watering_records_at_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plant_watering_records_at_index ON public.plant_watering_records USING btree (at);
+
+
+--
+-- Name: plant_watering_records_plant_id_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plant_watering_records_plant_id_index ON public.plant_watering_records USING btree (plant_id);
+
+
+--
+-- Name: plant_watering_records_scheduled_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plant_watering_records_scheduled_index ON public.plant_watering_records USING btree ("scheduled?");
+
+
+--
+-- Name: plants_identifier_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE UNIQUE INDEX plants_identifier_index ON public.plants USING btree (identifier);
+
+
+--
+-- Name: plants_tank_level_records_at_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plants_tank_level_records_at_index ON public.plants_tank_level_records USING btree (at);
+
+
+--
+-- Name: plants_tank_level_records_failed_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plants_tank_level_records_failed_index ON public.plants_tank_level_records USING btree ("failed?");
+
+
+--
+-- Name: plants_tank_level_records_plant_id_index; Type: INDEX; Schema: public; Owner: niss_ui
+--
+
+CREATE INDEX plants_tank_level_records_plant_id_index ON public.plants_tank_level_records USING btree (plant_id);
+
+
+--
+-- Name: plant_lighting_records plant_lighting_records_plant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plant_lighting_records
+    ADD CONSTRAINT plant_lighting_records_plant_id_fkey FOREIGN KEY (plant_id) REFERENCES public.plants(id);
+
+
+--
+-- Name: plant_watering_records plant_watering_records_plant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plant_watering_records
+    ADD CONSTRAINT plant_watering_records_plant_id_fkey FOREIGN KEY (plant_id) REFERENCES public.plants(id);
+
+
+--
+-- Name: plants_tank_level_records plants_tank_level_records_plant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: niss_ui
+--
+
+ALTER TABLE ONLY public.plants_tank_level_records
+    ADD CONSTRAINT plants_tank_level_records_plant_id_fkey FOREIGN KEY (plant_id) REFERENCES public.plants(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
