@@ -7,6 +7,8 @@ defmodule Niss.Application do
 
   @impl true
   def start(_type, _args) do
+    Logger.add_backend(Sentry.LoggerBackend)
+
     topologies = Application.get_env(:libcluster, :topologies) || []
 
     children =
