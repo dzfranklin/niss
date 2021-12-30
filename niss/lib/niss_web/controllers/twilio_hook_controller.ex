@@ -9,6 +9,7 @@ defmodule NissWeb.TwilioHookController do
 
     conn
     |> put_status(:ok)
-    |> text("OK\n")
+    |> put_resp_content_type("application/xml")
+    |> text("<Response></Response>\n")
   end
 end
