@@ -18,13 +18,9 @@ defmodule NissWeb.Router do
   end
 
   scope "/", NissWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
-  end
-
-  scope "/", NissWeb do
     pipe_through [:browser, :require_authenticated_user]
+
+    live "/", HomeLive.Index, :index
 
     live "/possessions", PossessionLive.Index, :index
     live "/possessions/new", PossessionLive.Index, :new
