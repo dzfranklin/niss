@@ -12,7 +12,7 @@ processes = []
   destination="/possession_images"
 
 [env]
-  PHX_HOST = "niss2.fly.dev"
+  PHX_HOST = "niss.danielzfranklin.org"
   PORT = "8080"
 
 [experimental]
