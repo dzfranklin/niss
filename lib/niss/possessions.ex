@@ -78,9 +78,11 @@ defmodule Niss.Possessions do
     image.path
   end
 
-  defp save_img_variant!(path, id, variant) do
+  defp save_img_variant!(source_path, id, variant) do
     name = "v1_#{id}_#{variant}.jpeg"
     dest_path = Path.join([@image_dir, name])
-    File.rename!(path, dest_path)
+    # Needed b/c we can't move across volumes
+    File.cp!(source_path, dest_path)
+    File.rm!(source_path)
   end
 end
