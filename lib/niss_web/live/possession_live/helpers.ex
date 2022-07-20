@@ -7,7 +7,7 @@ defmodule NissWeb.PossessionLive.Helpers do
     assigns = %{src: "/possession_images/v1_#{id}_#{variant}.jpeg"}
 
     ~H"""
-    <img {%{src: @src}}>
+    <img src={@src}>
     """
   end
 
