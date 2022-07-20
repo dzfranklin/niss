@@ -18,6 +18,13 @@ defmodule NissWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    live "/possessions", PossessionLive.Index, :index
+    live "/possessions/new", PossessionLive.Index, :new
+    live "/possessions/:id/edit", PossessionLive.Index, :edit
+
+    live "/possessions/:id", PossessionLive.Show, :show
+    live "/possessions/:id/show/edit", PossessionLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

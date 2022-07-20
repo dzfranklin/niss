@@ -1,0 +1,32 @@
+<h1>Show Possession</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal NissWeb.PossessionLive.FormComponent,
+    id: @possession.id,
+    title: @page_title,
+    action: @live_action,
+    possession: @possession,
+    return_to: Routes.possession_show_path(@socket, :show, @possession) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @possession.name %>
+  </li>
+
+  <li>
+    <strong>Count:</strong>
+    <%= @possession.count %>
+  </li>
+
+  <li>
+    <strong>Description:</strong>
+    <%= @possession.description %>
+  </li>
+
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.possession_show_path(@socket, :edit, @possession), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.possession_index_path(@socket, :index) %></span>
