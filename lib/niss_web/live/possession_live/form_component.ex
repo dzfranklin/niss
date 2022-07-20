@@ -2,6 +2,7 @@ defmodule NissWeb.PossessionLive.FormComponent do
   use NissWeb, :live_component
 
   import NissWeb.PossessionLive.Helpers
+  alias NissWeb.PossessionLive.TagsInputComponent
   alias Niss.Possessions
 
   @impl true
@@ -11,7 +12,14 @@ defmodule NissWeb.PossessionLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(changeset: changeset, uploaded_files: [])
+     |> assign(
+       changeset: changeset,
+       uploaded_files: [],
+       selected_tags: [
+         %{id: 3, display: "Tag 3"},
+         %{id: 1, display: "Tag 1"}
+       ]
+     )
      |> allow_upload(:image, accept: ~w(.jpg .jpeg .png), max_entries: 1)}
   end
 
@@ -63,5 +71,12 @@ defmodule NissWeb.PossessionLive.FormComponent do
     consume_uploaded_entries(socket, :image, fn %{path: path}, _entry ->
       Possessions.set_image!(possession, path)
     end)
+  end
+
+  defp query_tag(partial) do
+    [
+      %{id: 42, display: partial <> "_"},
+      %{id: 43, display: "_" <> partial <> "_"}
+    ]
   end
 end

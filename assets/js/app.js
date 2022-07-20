@@ -28,6 +28,39 @@ import topbar from "../vendor/topbar";
 
 const Hooks = {};
 
+Hooks.TagsInputComponentInput = {
+    mounted() {
+        let input = this.el;
+        input.addEventListener("keydown", this.onKeyDown.bind(this));
+        input.addEventListener("change", this.onAnyChange.bind(this));
+        input.addEventListener("keyup", this.onAnyChange.bind(this));
+    },
+    onKeyDown(evt) {
+        let input = this.el;
+        if (evt.key === " ") {
+            evt.preventDefault();
+            this.pushMyselfEvent("pick-active", {});
+            input.value = "";
+        } else if (evt.key == "ArrowUp") {
+            this.pushMyselfEvent("move-active-up", {});
+        } else if (evt.key == "ArrowDown") {
+            this.pushMyselfEvent("move-active-down", {});
+        }
+
+    },
+    onAnyChange(_evt) {
+        let input = this.el;
+        let value = input.value.toLowerCase().replace(/[^a-z]/g, "")
+        input.value = value;
+        if (value != this.lastValueSent) {
+            this.lastValueSent = value;
+            this.pushMyselfEvent("change", { value: value });
+        }
+    },
+    pushMyselfEvent(event, payload) {
+        this.pushEventTo(this.el, event, payload);
+    }
+};
 
 Hooks.Ping = {
     mounted() {

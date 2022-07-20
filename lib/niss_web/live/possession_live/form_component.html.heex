@@ -17,6 +17,13 @@
     <%= number_input f, :count %>
     <%= error_tag f, :count %>
 
+    <%= label f, :tags %>
+    <%= live_component TagsInputComponent,
+      id: "#{@id}-tags",
+      name: "possession[tags]",
+      query: &query_tag/1,
+      selected: @selected_tags %>
+
     <%= live_file_input @uploads.image %>
     <%= if length(@uploads.image.entries) == 0 do %>
       <%= maybe_possession_img(@possession, :preview) %>
