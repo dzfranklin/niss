@@ -1,6 +1,7 @@
 defmodule NissWeb.PossessionLive.Index do
   use NissWeb, :live_view
 
+  import NissWeb.PossessionLive.Helpers
   alias Niss.Possessions
   alias Niss.Possessions.Possession
 

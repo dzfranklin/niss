@@ -22,6 +22,10 @@ defmodule NissWeb.Endpoint do
     gzip: false,
     only: ~w(assets fonts images favicon.ico robots.txt)
 
+  plug Plug.Static,
+    at: "/possession_images",
+    from: Niss.Possessions.filesystem_image_dir()
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do

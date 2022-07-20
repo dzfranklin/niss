@@ -16,6 +16,20 @@
     <%= label f, :count %>
     <%= number_input f, :count %>
     <%= error_tag f, :count %>
+
+    <%= live_file_input @uploads.image %>
+    <%= if length(@uploads.image.entries) == 0 do %>
+      <%= maybe_possession_img(@possession, :preview) %>
+    <% else %>
+      <%= for entry <- @uploads.image.entries do %>
+        <figure>
+          <%= live_img_preview entry %>
+          <figcaption><%= entry.client_name %></figcaption>
+        </figure>
+
+        <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
+      <% end %>
+    <% end %>
   
     <%= label f, :description %>
     <%= textarea f, :description %>

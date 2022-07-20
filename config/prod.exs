@@ -47,3 +47,5 @@ config :logger, level: :info
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
+
+config :niss, Niss.Possessions, image_dir: "/possession_images"

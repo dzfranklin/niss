@@ -73,3 +73,7 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+possessions_img_dir = ".dev_possession_img_dir"
+File.mkdir_p!(possessions_img_dir)
+config :niss, Niss.Possessions, image_dir: possessions_img_dir

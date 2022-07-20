@@ -32,3 +32,5 @@ niss-*.tar
 npm-debug.log
 /assets/node_modules/
 
+/.dev_possession_img_dir
+/.test_possession_img_dir

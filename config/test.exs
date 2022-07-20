@@ -31,3 +31,7 @@ config :logger, level: :warn
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+possessions_img_dir = ".test_possession_img_dir"
+File.mkdir_p!(possessions_img_dir)
+config :niss, Niss.Possessions, image_dir: possessions_img_dir

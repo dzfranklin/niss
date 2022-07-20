@@ -1,6 +1,7 @@
 defmodule NissWeb.PossessionLive.Show do
   use NissWeb, :live_view
 
+  import NissWeb.PossessionLive.Helpers
   alias Niss.Possessions
 
   @impl true

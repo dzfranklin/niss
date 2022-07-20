@@ -12,6 +12,7 @@
 <table>
   <thead>
     <tr>
+      <th></th>
       <th>Name</th>
       <th>Count</th>
       <th>Description</th>
@@ -22,6 +23,7 @@
   <tbody id="possessions">
     <%= for possession <- @possessions do %>
       <tr id={"possession-#{possession.id}"}>
+        <td><%= maybe_possession_img(possession, :icon) %></td>
         <td><%= possession.name %></td>
         <td><%= possession.count %></td>
         <td><%= possession.description %></td>

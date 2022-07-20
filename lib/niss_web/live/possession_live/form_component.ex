@@ -1,6 +1,7 @@
 defmodule NissWeb.PossessionLive.FormComponent do
   use NissWeb, :live_component
 
+  import NissWeb.PossessionLive.Helpers
   alias Niss.Possessions
 
   @impl true
@@ -10,7 +11,8 @@ defmodule NissWeb.PossessionLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:changeset, changeset)}
+     |> assign(changeset: changeset, uploaded_files: [])
+     |> allow_upload(:image, accept: ~w(.jpg .jpeg .png), max_entries: 1)}
   end
 
   @impl true
@@ -29,7 +31,9 @@ defmodule NissWeb.PossessionLive.FormComponent do
 
   defp save_possession(socket, :edit, possession_params) do
     case Possessions.update_possession(socket.assigns.possession, possession_params) do
-      {:ok, _possession} ->
+      {:ok, possession} ->
+        save_image(socket, possession)
+
         {:noreply,
          socket
          |> put_flash(:info, "Possession updated successfully")
@@ -42,7 +46,9 @@ defmodule NissWeb.PossessionLive.FormComponent do
 
   defp save_possession(socket, :new, possession_params) do
     case Possessions.create_possession(possession_params) do
-      {:ok, _possession} ->
+      {:ok, possession} ->
+        save_image(socket, possession)
+
         {:noreply,
          socket
          |> put_flash(:info, "Possession created successfully")
@@ -51,5 +57,11 @@ defmodule NissWeb.PossessionLive.FormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  defp save_image(socket, possession) do
+    consume_uploaded_entries(socket, :image, fn %{path: path}, _entry ->
+      Possessions.set_image!(possession, path)
+    end)
   end
 end

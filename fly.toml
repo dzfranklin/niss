@@ -1,5 +1,3 @@
-# fly.toml file generated for niss2 on 2022-07-19T21:51:10-06:00
-
 app = "niss2"
 
 kill_signal = "SIGTERM"
@@ -8,6 +6,10 @@ processes = []
 
 [deploy]
   release_command = "/app/bin/migrate"
+
+[mounts]
+  source="possession_images"
+  destination="/possession_images"
 
 [env]
   PHX_HOST = "niss2.fly.dev"
