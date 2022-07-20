@@ -21,6 +21,10 @@ defmodule NissWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+  end
+
+  scope "/", NissWeb do
+    pipe_through [:browser, :require_authenticated_user]
 
     live "/possessions", PossessionLive.Index, :index
     live "/possessions/new", PossessionLive.Index, :new
@@ -74,7 +78,7 @@ defmodule NissWeb.Router do
   end
 
   scope "/", NissWeb do
-    pipe_through [:browser]
+    pipe_through [:browser, :require_authenticated_user]
 
     delete "/users/log_out", UserSessionController, :delete
   end
