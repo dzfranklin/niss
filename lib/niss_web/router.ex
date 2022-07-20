@@ -18,6 +18,12 @@ defmodule NissWeb.Router do
   end
 
   scope "/", NissWeb do
+    pipe_through [:browser]
+
+    live "/ping", PingLive, :index
+  end
+
+  scope "/", NissWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live "/", HomeLive.Index, :index
