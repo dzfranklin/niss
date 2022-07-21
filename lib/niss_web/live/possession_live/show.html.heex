@@ -1,12 +1,14 @@
 <h1>Show Possession</h1>
 
 <%= if @live_action in [:edit] do %>
-  <%= live_modal NissWeb.PossessionLive.FormComponent,
+  <%= live_modal NissWeb.PossessionLive.FormLive,
     id: @possession.id,
-    title: @page_title,
-    action: @live_action,
-    possession: @possession,
-    return_to: Routes.possession_show_path(@socket, :show, @possession) %>
+    return_to: Routes.possession_show_path(@socket, :show, @possession),
+    session: %{
+      "title" => @page_title,
+      "action" => @live_action,
+      "possession_id" => @possession.id
+    } %>
 <% end %>
 
 <ul>

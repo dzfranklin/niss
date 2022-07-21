@@ -1,18 +1,27 @@
-defmodule NissWeb.PossessionLive.FormComponent do
-  use NissWeb, :live_component
+defmodule NissWeb.PossessionLive.FormLive do
+  use NissWeb, :live_view
 
   import NissWeb.PossessionLive.Helpers
   alias NissWeb.PossessionLive.TagsInputComponent
   alias Niss.Possessions
 
   @impl true
-  def update(%{possession: possession} = assigns, socket) do
+  def mount(_params, session, socket) do
+    possession_id = Map.fetch!(session, "possession_id")
+    possession = if is_nil(possession_id) do
+      %Possessions.Possession{}
+    else
+      Possessions.get_possession!(possession_id)
+    end
     changeset = Possessions.change_possession(possession)
 
     {:ok,
      socket
-     |> assign(assigns)
      |> assign(
+       title: Map.fetch!(session, "title"),
+       action: Map.fetch!(session, "action"),
+       return_to: Map.fetch!(session, "return_to"),
+       possession: possession,
        changeset: changeset,
        uploaded_files: [],
        selected_tags: [

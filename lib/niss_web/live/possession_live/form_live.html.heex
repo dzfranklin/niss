@@ -5,7 +5,6 @@
     let={f}
     for={@changeset}
     id="possession-form"
-    phx-target={@myself}
     phx-change="validate"
     phx-submit="save">
   
@@ -19,7 +18,7 @@
 
     <%= label f, :tags %>
     <%= live_component TagsInputComponent,
-      id: "#{@id}-tags",
+      id: :tags,
       name: "possession[tags]",
       query: &query_tag/1,
       selected: @selected_tags %>

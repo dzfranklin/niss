@@ -15,7 +15,7 @@ defmodule NissWeb.ModalComponent do
 
       <div class="phx-modal-content">
         <%= live_patch raw("&times;"), to: @return_to, class: "phx-modal-close" %>
-        <%= live_component @component, @opts %>
+        <%= live_render @socket, @lv, id: @lv_id, session: @session %>
       </div>
     </div>
     """

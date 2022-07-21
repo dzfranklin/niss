@@ -4,23 +4,23 @@ defmodule NissWeb.LiveHelpers do
   alias Niss.Accounts
 
   @doc """
-  Renders a component inside the `NissWeb.ModalComponent` component.
+  Renders a liveview inside the `NissWeb.ModalComponent` component.
 
-  The rendered modal receives a `:return_to` option to properly update
-  the URL when the modal is closed.
+  Required opts:
+  - `return_to`: URL to return to when modal is closed. Provided to liveview via
+    session
 
-  ## Examples
-
-      <%= live_modal NissWeb.PossessionLive.FormComponent,
-        id: @possession.id || :new,
-        action: @live_action,
-        possession: @possession,
-        return_to: Routes.possession_index_path(@socket, :index) %>
+  Optional opts:
+  - `session`: Session to pass to liveview
   """
-  def live_modal(component, opts) do
+  def live_modal(lv, opts) do
     path = Keyword.fetch!(opts, :return_to)
-    modal_opts = [id: :modal, return_to: path, component: component, opts: opts]
-    live_component(NissWeb.ModalComponent, modal_opts)
+
+    session = Keyword.get(IO.inspect(opts), :session, %{})
+      |> Map.put("return_to", path)
+
+    modal_opts = [id: :modal, lv_id: :modal_lv, return_to: path, lv: lv, session: session]
+    live_component(NissWeb.ModalComponent, IO.inspect(modal_opts))
   end
 
   def ensure_authed(socket, session) do
