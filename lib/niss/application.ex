@@ -15,10 +15,9 @@ defmodule Niss.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Niss.PubSub},
       # Start the Endpoint (http/https)
-      NissWeb.Endpoint,
+      NissWeb.Endpoint
       # Start a worker by calling: Niss.Worker.start_link(arg)
       # {Niss.Worker, arg}
-      {Niss.Possessions.ImageCompanion.Matcher, name: Niss.Possessions.ImageCompanion.Matcher}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

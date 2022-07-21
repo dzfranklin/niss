@@ -24,27 +24,10 @@
       query: &query_tag/1,
       selected: @selected_tags %>
 
+    <%= live_file_input @uploads.image %>
     <%= if length(@uploads.image.entries) == 0 do %>
       <%= maybe_possession_img(@possession, :preview) %>
-    <% end %>
-
-    <div>
-      <%= live_file_input @uploads.image %>
-
-      <%= case @img_companion_flow do %>
-        <% nil -> %>
-          <button
-            type="button"
-            phx-target={@myself}
-            phx-click="init-companion-flow">
-          Take photo via companion</button>
-        <% {:pairing, {url, qr}} -> %>
-          <div>
-            <%= raw(qr) %>
-            <p><a href={url}><%= url %></a></p>
-          </div>
-      <% end %>
-
+    <% else %>
       <%= for entry <- @uploads.image.entries do %>
         <figure>
           <%= live_img_preview entry %>
@@ -53,7 +36,7 @@
 
         <progress value={entry.progress} max="100"> <%= entry.progress %>% </progress>
       <% end %>
-    </div>
+    <% end %>
   
     <%= label f, :description %>
     <%= textarea f, :description %>
