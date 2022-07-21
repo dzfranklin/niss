@@ -21,6 +21,7 @@ defmodule NissWeb.Router do
     pipe_through [:browser]
 
     live "/ping", PingLive, :index
+    live "/possessions/image-companion/:id", PossessionLive.ImageCompanion.Show, :show
   end
 
   scope "/", NissWeb do

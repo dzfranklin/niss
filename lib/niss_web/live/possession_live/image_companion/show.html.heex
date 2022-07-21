@@ -1,0 +1,8 @@
+<%= if connected?(@socket) do %>
+    <form
+        id="form"
+        phx-change="change"
+        phx-submit="save">
+      <%= live_file_input @uploads.image %>
+    </form>
+<% end %>
