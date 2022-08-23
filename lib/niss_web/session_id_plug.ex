@@ -1,6 +1,5 @@
 defmodule NissWeb.SessionIdPlug do
   import Plug.Conn
-  import Phoenix.Controller
 
   def maybe_assign_session_id(conn, _opts) do
     if is_nil(get_session(conn, :session_id)) do

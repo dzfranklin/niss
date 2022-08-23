@@ -20,25 +20,9 @@ defmodule NissWeb.Router do
   end
 
   scope "/", NissWeb do
-    pipe_through [:browser]
-
-    live "/ping", PingLive, :index
-  end
-
-  scope "/", NissWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live "/", HomeLive.Index, :index
-
-    live "/possessions", PossessionLive.Index, :index
-    live "/possessions/new", PossessionLive.Index, :new
-    live "/possessions/:id/edit", PossessionLive.Index, :edit
-
-    live "/possessions/:id", PossessionLive.Show, :show
-    live "/possessions/:id/show/edit", PossessionLive.Show, :edit
-
-    live "/pair/setup-primary", PairLive.SetupPrimary, :index
-    live "/pair/companion/:prim", PairLive.Companion, :show
   end
 
   # Other scopes may use custom stacks.

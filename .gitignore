@@ -1,3 +1,5 @@
+/.elixir_ls/
+
 # The directory Mix will write compiled artifacts to.
 /_build/
 
@@ -31,6 +33,3 @@ niss-*.tar
 # In case you use Node.js/npm, you want to ignore these.
 npm-debug.log
 /assets/node_modules/
-
-/.dev_possession_img_dir
-/.test_possession_img_dir

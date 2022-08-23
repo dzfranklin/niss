@@ -99,6 +99,7 @@ defmodule NissWeb do
       import NissWeb.ErrorHelpers
       import NissWeb.Gettext
       alias NissWeb.Router.Helpers, as: Routes
+      alias NissWeb.Endpoint
     end
   end
 
