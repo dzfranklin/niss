@@ -2,6 +2,7 @@ defmodule NissWeb.Router do
   use NissWeb, :router
 
   import NissWeb.UserAuth
+  import NissWeb.SessionIdPlug
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -11,6 +12,7 @@ defmodule NissWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug :maybe_assign_session_id
   end
 
   pipeline :api do
@@ -34,6 +36,9 @@ defmodule NissWeb.Router do
 
     live "/possessions/:id", PossessionLive.Show, :show
     live "/possessions/:id/show/edit", PossessionLive.Show, :edit
+
+    live "/pair/setup-primary", PairLive.SetupPrimary, :index
+    live "/pair/companion/:prim", PairLive.Companion, :show
   end
 
   # Other scopes may use custom stacks.

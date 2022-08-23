@@ -4,9 +4,17 @@ defmodule NissWeb.PossessionLive.FormLive do
   import NissWeb.PossessionLive.Helpers
   alias NissWeb.PossessionLive.TagsInputComponent
   alias Niss.Possessions
+  alias NissWeb.PairLive.Helpers, as: Pair
 
   @impl true
   def mount(_params, session, socket) do
+    prim = session.session_id
+    if connected?(socket) do
+      Pair.subscribe(prim)
+      if Pair.connected? # TODOO Hun
+      Pair.request_pic(prim)
+    end
+
     possession_id = Map.fetch!(session, "possession_id")
     possession = if is_nil(possession_id) do
       %Possessions.Possession{}
@@ -18,6 +26,7 @@ defmodule NissWeb.PossessionLive.FormLive do
     {:ok,
      socket
      |> assign(
+       prim: prim,
        title: Map.fetch!(session, "title"),
        action: Map.fetch!(session, "action"),
        return_to: Map.fetch!(session, "return_to"),
