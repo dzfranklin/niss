@@ -22,7 +22,7 @@ defmodule NissWeb.Router do
   scope "/", NissWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live "/", HomeLive.Index, :index
+    live "/", HomeLive, :index
   end
 
   # Other scopes may use custom stacks.
