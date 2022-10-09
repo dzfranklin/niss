@@ -23,6 +23,10 @@ defmodule NissWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live "/", HomeLive, :index
+
+    scope "/backpack", Backpack do
+      live "/item", ItemLive
+    end
   end
 
   # Other scopes may use custom stacks.
